@@ -1,6 +1,6 @@
 ;;; packages.el --- Emacs Lisp Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -46,8 +46,10 @@
           (lisp-indent-line))))))
 
 (defun emacs-lisp/post-init-company ()
-  (spacemacs|add-company-hook ielm-mode)
-  (push '(company-files company-capf) company-backends-ielm-mode))
+  (spacemacs|add-company-backends :backends company-capf
+                                  :modes emacs-lisp-mode)
+  (spacemacs|add-company-backends :backends (company-files company-capf)
+                                  :modes ielm-mode))
 
 (defun emacs-lisp/post-init-eldoc ()
   (add-hook 'emacs-lisp-mode-hook 'eldoc-mode))
@@ -93,6 +95,7 @@
       "cc" 'emacs-lisp-byte-compile
       "e$" 'lisp-state-eval-sexp-end-of-line
       "eb" 'eval-buffer
+      "eC" 'spacemacs/eval-current-form
       "ee" 'eval-last-sexp
       "er" 'eval-region
       "ef" 'eval-defun
@@ -100,10 +103,7 @@
       "gG" 'spacemacs/nav-find-elisp-thing-at-point-other-window
       ","  'lisp-state-toggle-lisp-state
       "tb" 'spacemacs/ert-run-tests-buffer
-      "tq" 'ert))
-  ;; company support
-  (push 'company-capf company-backends-emacs-lisp-mode)
-  (spacemacs|add-company-hook emacs-lisp-mode))
+      "tq" 'ert)))
 
 (defun emacs-lisp/init-macrostep ()
   (use-package macrostep
@@ -167,35 +167,6 @@
         "=s" 'srefactor-lisp-format-sexp))))
 
 (defun emacs-lisp/post-init-smartparens ()
-  (advice-remove 'elisp--preceding-sexp 'evil--preceding-sexp)
-
-  (defun spacemacs/eval-current-form-sp (&optional arg)
-    "Call `eval-last-sexp' after moving out of one level of
-parentheses. Will exit any strings and/or comments first.
-Requires smartparens because all movement is done using
-`sp-up-sexp'. An optional ARG can be used which is passed to
-`sp-up-sexp' to move out of more than one sexp."
-    (interactive "p")
-    (require 'smartparens)
-    (save-excursion
-      (let ((max 10))
-        (while (and (> max 0)
-                    (sp-point-in-string-or-comment))
-          (decf max)
-          (sp-up-sexp)))
-      (sp-up-sexp arg)
-      (call-interactively 'eval-last-sexp)))
-
-  (defun spacemacs/eval-current-symbol-sp ()
-    "Call `eval-last-sexp' on the symbol around point. Requires
-smartparens because all movement is done using
-`sp-forward-symbol'."
-    (interactive)
-    (require 'smartparens)
-    (save-excursion
-      (sp-forward-symbol)
-      (call-interactively 'eval-last-sexp)))
-
   (dolist (mode '(emacs-lisp-mode lisp-interaction-mode))
     (spacemacs/set-leader-keys-for-major-mode mode
       "ec" 'spacemacs/eval-current-form-sp

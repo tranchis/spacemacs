@@ -1,6 +1,6 @@
 ;;; packages.el --- Git Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -127,6 +127,7 @@
       (spacemacs/set-leader-keys
         "gb"  'spacemacs/git-blame-micro-state
         "gfh" 'magit-log-buffer-file
+        "gL"  'magit-list-repositories
         "gm"  'magit-dispatch-popup
         "gs"  'magit-status
         "gS"  'magit-stage-file
@@ -157,6 +158,11 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
       (require 'git-rebase)
       ;; bind function keys
       ;; (define-key magit-mode-map (kbd "<tab>") 'magit-section-toggle)
+      (evilified-state-evilify-map magit-repolist-mode-map
+          :mode magit-repolist-mode
+          :bindings
+          (kbd "gr") 'magit-list-repositories
+          (kbd "RET") 'magit-repolist-status)
       (unless (configuration-layer/package-usedp 'evil-magit)
         ;; use auto evilification if `evil-magit' is not used
         (evilified-state-evilify-map magit-mode-map
@@ -398,8 +404,8 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
                  ("smeargle-clear" . "clear"))))
           (dolist (nd descr)
             ;; ensure the target matches the whole string
-            (push (cons (concat "\\`" (car nd) "\\'") (cdr nd))
-                  which-key-description-replacement-alist))))
+            (push (cons (cons nil (concat "\\`" (car nd) "\\'")) (cons nil (cdr nd)))
+                  which-key-replacement-alist))))
       (spacemacs/set-leader-keys
         "gHc" 'smeargle-clear
         "gHh" 'smeargle-commits

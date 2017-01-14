@@ -1,6 +1,6 @@
 ;;; packages.el --- Rust Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Chris Hoeppner <me@mkaito.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -65,18 +65,18 @@
     :init
     (progn
       (spacemacs/set-leader-keys-for-major-mode 'rust-mode
-        "=" 'rust-format-buffer))))
+        "=" 'rust-format-buffer
+        "q" 'spacemacs/rust-quick-run))))
 
 (defun rust/init-toml-mode ()
   (use-package toml-mode
     :mode "/\\(Cargo.lock\\|\\.cargo/config\\)\\'"))
 
 (defun rust/post-init-company ()
-  (push 'company-capf company-backends-rust-mode)
-  (spacemacs|add-company-hook rust-mode)
-  (add-hook 'rust-mode-hook
-            (lambda ()
-              (setq-local company-tooltip-align-annotations t))))
+  (spacemacs|add-company-backends
+    :backends company-capf
+    :modes rust-mode
+    :variables company-tooltip-align-annotations t))
 
 (defun rust/post-init-smartparens ()
   (with-eval-after-load 'smartparens
@@ -94,4 +94,10 @@
     (progn
       (spacemacs/add-to-hook 'rust-mode-hook '(racer-mode eldoc-mode))
       (spacemacs/declare-prefix-for-mode 'rust-mode "mg" "goto")
-      (add-to-list 'spacemacs-jump-handlers-rust-mode 'racer-find-definition))))
+      (add-to-list 'spacemacs-jump-handlers-rust-mode 'racer-find-definition)
+      (spacemacs/declare-prefix-for-mode 'rust-mode "mh" "help")
+      (spacemacs/set-leader-keys-for-major-mode 'rust-mode
+        "hh" 'spacemacs/racer-describe))
+    :config
+    (evilified-state-evilify-map racer-help-mode-map
+      :mode racer-help-mode)))

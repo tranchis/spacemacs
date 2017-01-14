@@ -23,6 +23,7 @@
    - [[#git-flow-1][Git-Flow]]
    - [[#git-time-machine][Git time machine]]
    - [[#git-links-to-web-services][Git links to web services]]
+   - [[#repository-list][Repository list]]
 
 * Description
 This layers adds extensive support for [[http://git-scm.com/][git]].
@@ -36,7 +37,7 @@ This layers adds extensive support for [[http://git-scm.com/][git]].
 - gitignore generator with [[https://github.com/jupl/helm-gitignore][helm-gitignore]]
 - org integration with magit via [[https://github.com/magit/orgit][orgit]]
 
-New to Magit? Checkout the [[http://magit.vc/about.html][official intro]].
+New to Magit? Checkout the [[https://magit.vc/about/][official intro]].
 
 * Install
 ** Layer
@@ -111,6 +112,7 @@ Git commands (start with ~g~):
 | ~SPC g H h~ | highlight regions by age of commits                 |
 | ~SPC g H t~ | highlight regions by last updated time              |
 | ~SPC g I~   | open =helm-gitignore=                               |
+| ~SPC g L~   | open magit-repolist                                 |
 | ~SPC g s~   | open a =magit= status window                        |
 | ~SPC g S~   | stage current file                                  |
 | ~SPC g m~   | magit dispatch popup                                |
@@ -176,8 +178,8 @@ intended. To work around this, you can use =v= instead (since Magit only stages
 whole lines, in any case).
 
 ** Commit message editing buffer
-In a commit message buffer press ~,c~ (if =dotspacemacs-major-mode-leader-key= is ~​,​~)
-or ~C-c C-c~ to commit the changes with the entered message. Pressing ~,a~ or ~C-c C-k~
+In a commit message buffer press ~​,​c~ (if =dotspacemacs-major-mode-leader-key= is ~​,​~)
+or ~C-c C-c~ to commit the changes with the entered message. Pressing ~​,​a~ or ~C-c C-k~
 will discard the commit message.
 
 | Key Binding | Description |
@@ -209,14 +211,14 @@ will discard the commit message.
 - Amend a commit:
   - ~l l~ to open =log buffer=
   - ~c a~ on the commit you want to amend
-  - ~,c~ or ~C-c C-c~ to submit the changes
+  - ~​,​c~ or ~C-c C-c~ to submit the changes
 - Squash last commit:
   - ~l l~ to open =log buffer=
   - ~r e~ on the second to last commit, it opens the =rebase buffer=
   - ~j~ to put point on last commit
   - ~s~ to squash it
-  - ~,c~ or ~C-c C-c~ to continue to the =commit message buffer=
-  - ~,c~ or ~C-c C-c~ again when you have finished to edit the commit message
+  - ~​,​c~ or ~C-c C-c~ to continue to the =commit message buffer=
+  - ~​,​c~ or ~C-c C-c~ again when you have finished to edit the commit message
 - Force push a squashed commit:
   - in the =status buffer= you should see the new commit unpushed and the old
     commit unpulled
@@ -266,3 +268,20 @@ or lines in a file hosted on Git web services like GitHub, GitLab, Bitbucket...
 - When the link is opened, the URL is also copied in the kill ring, you can
   override this behavior by setting the variable =git-link-open-in-browser= to
   =nil=.
+
+** Repository list
+
+This feature will show a list of git directories. The feature needs slight
+configuration within your `.spacemacs` config. In the `dotspacemacs/user-config()` 
+stanza insert the following with the directories of your choice:
+
+#+BEGIN_SRC emacs-lisp
+(setq magit-repository-directories
+      '("~/Development"))
+#+END_SRC
+
+| Key Binding | Description                                         |
+|-------------+-----------------------------------------------------|
+| ~SPC g L~   | start git repo list                                 |
+| ~RET~       | show the git status window for the selected project |
+| ~gr~        | refresh the project list                            |

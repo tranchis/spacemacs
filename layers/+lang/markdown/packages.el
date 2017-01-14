@@ -1,6 +1,6 @@
 ;;; packages.el --- Markdown Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -23,11 +23,12 @@
     ))
 
 (defun markdown/post-init-company ()
-  (spacemacs|add-company-hook markdown-mode)
-  (push 'company-capf company-backends-markdown-mode))
+  (spacemacs|add-company-backends :backends company-capf :modes markdown-mode))
 
 (defun markdown/post-init-company-emoji ()
-  (push 'company-emoji company-backends-markdown-mode))
+  (spacemacs|add-company-backends
+    :backends company-emoji
+    :modes markdown-mode))
 
 (defun markdown/post-init-emoji-cheat-sheet-plus ()
   (add-hook 'markdown-mode-hook 'emoji-cheat-sheet-plus-display-mode))
@@ -160,13 +161,16 @@ Will work on both org-mode and any mode that accepts plain html."
 
 (defun markdown/init-mmm-mode ()
   (use-package mmm-mode
-    :commands mmm-parse-buffer
-    :init
-    (spacemacs/set-leader-keys-for-major-mode 'markdown-mode
-      ;; Highlight code blocks
-      "cs"   'mmm-parse-buffer)
+    :commands mmm-mode
+    :init (add-hook 'markdown-mode-hook 'spacemacs/activate-mmm-mode)
     :config
     (progn
+      (spacemacs|hide-lighter mmm-mode)
+      (mmm-add-classes '((markdown-ini
+                          :submode conf-unix-mode
+                          :face mmm-declaration-submode-face
+                          :front "^```ini[\n\r]+"
+                          :back "^```$")))
       (mmm-add-classes '((markdown-python
                           :submode python-mode
                           :face mmm-declaration-submode-face
@@ -217,7 +221,6 @@ Will work on both org-mode and any mode that accepts plain html."
                           :face mmm-declaration-submode-face
                           :front "^```rust[\n\r]+"
                           :back "^```$")))
-      (setq mmm-global-mode t)
       (mmm-add-mode-ext-class 'markdown-mode nil 'markdown-python)
       (mmm-add-mode-ext-class 'markdown-mode nil 'markdown-java)
       (mmm-add-mode-ext-class 'markdown-mode nil 'markdown-ruby)
@@ -227,7 +230,8 @@ Will work on both org-mode and any mode that accepts plain html."
       (mmm-add-mode-ext-class 'markdown-mode nil 'markdown-html)
       (mmm-add-mode-ext-class 'markdown-mode nil 'markdown-javascript)
       (mmm-add-mode-ext-class 'markdown-mode nil 'markdown-ess)
-      (mmm-add-mode-ext-class 'markdown-mode nil 'markdown-rust))))
+      (mmm-add-mode-ext-class 'markdown-mode nil 'markdown-rust)
+      (mmm-add-mode-ext-class 'markdown-mode nil 'markdown-ini))))
 
 (defun markdown/init-vmd-mode ()
   (use-package vmd-mode

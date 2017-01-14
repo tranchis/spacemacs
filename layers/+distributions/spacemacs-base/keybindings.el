@@ -1,6 +1,6 @@
 ;;; keybindings.el --- Spacemacs Base Layer key-bindings File
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -45,6 +45,7 @@
                                        ("sa"  "ag")
                                        ("sg"  "grep")
                                        ("sk"  "ack")
+                                       ("sr"  "ripgrep")
                                        ("st"  "pt")
                                        ("sw"  "web")
                                        ("t"   "toggles")
@@ -120,9 +121,10 @@
   "bd"    'spacemacs/kill-this-buffer
   "be"    'spacemacs/safe-erase-buffer
   "bh"    'spacemacs/home
-  "b C-d" 'spacemacs/kill-matching-buffers-rudely
+  "b C-d" 'spacemacs/kill-other-buffers
+  "b C-S-d" 'spacemacs/kill-matching-buffers-rudely
   "bn"    'next-buffer
-  "bm"    'spacemacs/kill-other-buffers
+  "bm"    'spacemacs/switch-to-messages-buffer
   "bN"    'spacemacs/new-empty-buffer
   "bP"    'spacemacs/copy-clipboard-to-whole-buffer
   "bp"    'previous-buffer
@@ -130,6 +132,10 @@
   "bs"    'spacemacs/switch-to-scratch-buffer
   "bY"    'spacemacs/copy-whole-buffer-to-clipboard
   "bw"    'read-only-mode)
+(dotimes (i 9)
+  (let ((n (+ i 1)))
+    (spacemacs/set-leader-keys (format "b%i" n)
+      (intern (format "buffer-to-window-%s" n)))))
 ;; Cycling settings -----------------------------------------------------------
 (spacemacs/set-leader-keys "Tn" 'spacemacs/cycle-spacemacs-theme)
 ;; errors ---------------------------------------------------------------------
@@ -229,6 +235,7 @@
   "cr" 'recompile
   "cd" 'spacemacs/close-compilation-window)
 (with-eval-after-load 'compile
+  (evil-define-key 'motion compilation-mode-map (kbd "gf") 'find-file-at-point)
   (define-key compilation-mode-map "r" 'recompile)
   (define-key compilation-mode-map "g" nil))
 ;; narrow & widen -------------------------------------------------------------
@@ -303,7 +310,15 @@
   :on (hidden-mode-line-mode -1)
   :off (hidden-mode-line-mode)
   :documentation "Toggle the visibility of modeline."
+  :evil-leader "tmT")
+(spacemacs|add-toggle display-time
+  :mode display-time-mode
+  :documentation "Display time in modeline."
   :evil-leader "tmt")
+(spacemacs|add-toggle syntax-highlighting
+  :mode font-lock-mode
+  :documentation "Toggle syntax highlighting."
+  :evil-leader "ths")
 (spacemacs|add-toggle transparent-frame
   :status nil
   :on (spacemacs/toggle-transparency)
@@ -353,6 +368,7 @@
     (golden-ratio)))
 
 (spacemacs/set-leader-keys
+  "w TAB"  'spacemacs/alternate-window
   "w2"  'spacemacs/layout-double-columns
   "w3"  'spacemacs/layout-triple-columns
   "wb"  'spacemacs/switch-to-minibuffer-window
@@ -380,7 +396,7 @@
   "wc"  'spacemacs/toggle-centered-buffer-mode
   "wC"  'spacemacs/centered-buffer-mode-full-width
   "wo"  'other-frame
-  "wr"  'spacemacs/rotate-windows
+  "wr"  'spacemacs/rotate-windows-forward
   "wR"  'spacemacs/rotate-windows-backward
   "ws"  'split-window-below
   "wS"  'split-window-below-and-focus
@@ -392,6 +408,7 @@
   "ww"  'other-window
   "w/"  'split-window-right
   "w="  'balance-windows
+  "w+"  'spacemacs/window-layout-toggle
   "w_"  'spacemacs/maximize-horizontally)
 ;; text -----------------------------------------------------------------------
 (defalias 'count-region 'count-words-region)
@@ -418,6 +435,7 @@
   "xjl" 'set-justification-left
   "xjn" 'set-justification-none
   "xjr" 'set-justification-right
+  "xld" 'spacemacs/duplicate-line-or-region
   "xls" 'spacemacs/sort-lines
   "xlu" 'spacemacs/uniquify-lines
   "xtc" 'transpose-chars
@@ -446,12 +464,44 @@
 
 (spacemacs|define-transient-state buffer
   :title "Buffer Selection Transient State"
+  :doc (concat "
+ [_C-1_,_C-9_]^^  goto nth window              [_n_]^^     next buffer
+ [_1_,_9_]^^      move buffer to nth window    [_N_/_p_]   previous buffer
+ [_M-1_,_M-9_]^^  swap buffer w/ nth window    [_d_]^^     kill buffer
+              ^^^^^^                           [_q_]^^     quit")
   :bindings
-  ("n" next-buffer "next")
-  ("N" previous-buffer "previous")
-  ("p" previous-buffer "previous")
-  ("K" spacemacs/kill-this-buffer "kill")
-  ("q" nil "quit" :exit t))
+  ("n" next-buffer)
+  ("N" previous-buffer)
+  ("p" previous-buffer)
+  ("d" spacemacs/kill-this-buffer)
+  ("q" nil :exit t)
+  ("1" move-buffer-window-no-follow-1)
+  ("2" move-buffer-window-no-follow-2)
+  ("3" move-buffer-window-no-follow-3)
+  ("4" move-buffer-window-no-follow-4)
+  ("5" move-buffer-window-no-follow-5)
+  ("6" move-buffer-window-no-follow-6)
+  ("7" move-buffer-window-no-follow-7)
+  ("8" move-buffer-window-no-follow-8)
+  ("9" move-buffer-window-no-follow-9)
+  ("M-1" swap-buffer-window-no-follow-1)
+  ("M-2" swap-buffer-window-no-follow-2)
+  ("M-3" swap-buffer-window-no-follow-3)
+  ("M-4" swap-buffer-window-no-follow-4)
+  ("M-5" swap-buffer-window-no-follow-5)
+  ("M-6" swap-buffer-window-no-follow-6)
+  ("M-7" swap-buffer-window-no-follow-7)
+  ("M-8" swap-buffer-window-no-follow-8)
+  ("M-9" swap-buffer-window-no-follow-9)
+  ("C-1" select-window-1)
+  ("C-2" select-window-2)
+  ("C-3" select-window-3)
+  ("C-4" select-window-4)
+  ("C-5" select-window-5)
+  ("C-6" select-window-6)
+  ("C-7" select-window-7)
+  ("C-8" select-window-8)
+  ("C-9" select-window-9))
 (spacemacs/set-leader-keys "b." 'spacemacs/buffer-transient-state/body)
 
 ;; end of Buffer transient state
@@ -528,7 +578,7 @@
   ("L" evil-window-move-far-right)
   ("<S-right>" evil-window-move-far-right)
   ("o" other-frame)
-  ("r" spacemacs/rotate-windows)
+  ("r" spacemacs/rotate-windows-forward)
   ("R" spacemacs/rotate-windows-backward)
   ("s" split-window-below)
   ("S" split-window-below-and-focus)

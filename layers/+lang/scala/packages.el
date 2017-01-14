@@ -1,6 +1,6 @@
 ;;; packages.el --- Scala Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -38,7 +38,7 @@
       (add-to-list 'spacemacs-jump-handlers-scala-mode 'ensime-edit-definition))
     :config
     (progn
-      (setq user-emacs-ensime-directory ".cache/ensime")
+      (setq ensime-startup-dirname (expand-file-name "ensime" spacemacs-cache-directory))
 
       (evil-define-key 'insert ensime-mode-map
         (kbd ".") 'scala/completing-dot

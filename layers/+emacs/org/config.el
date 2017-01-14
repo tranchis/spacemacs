@@ -1,6 +1,6 @@
 ;;; config.el --- Org configuration File for Spacemacs
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -26,4 +26,5 @@ path, one file per project is used (and the path is relative to
 the project root). If it an absolute path, one global file is
 used.")
 
-(spacemacs|defvar-company-backends org-mode)
+(defvar org-enable-org-journal-support nil
+  "If non-nil org-journal is configured.")

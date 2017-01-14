@@ -1,6 +1,6 @@
 ;;; config.el --- Spacemacs Base Layer configuration File
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -134,9 +134,7 @@ It runs `tabulated-list-revert-hook', then calls `tabulated-list-print'."
     ;; but IS available during the subsequent config reloads
     (if (fboundp 'spacemacs/toggle-fullscreen-frame-on)
         (spacemacs/toggle-fullscreen-frame-on)
-      (spacemacs/toggle-frame-fullscreen))
-  (if dotspacemacs-maximized-at-startup
-      (add-hook 'window-setup-hook 'toggle-frame-maximized)))
+      (spacemacs/toggle-frame-fullscreen)))
 
 (setq ns-use-native-fullscreen (not dotspacemacs-fullscreen-use-non-native))
 
@@ -153,9 +151,6 @@ It runs `tabulated-list-revert-hook', then calls `tabulated-list-print'."
 ;; Session
 ;; ---------------------------------------------------------------------------
 
-;; save custom variables in ~/.spacemacs
-(unless (bound-and-true-p custom-file)
-  (setq custom-file (dotspacemacs/location)))
 ;; scratch buffer empty
 (setq initial-scratch-message nil)
 ;; don't create backup~ files

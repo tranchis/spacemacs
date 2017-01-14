@@ -1,6 +1,6 @@
 ;;; core-configuration-layer.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -183,7 +183,9 @@ LAYER has to be installed for this method to work properly."
              "If non-nil this package is excluded from all layers.")))
 
 (defmethod cfgl-package-enabledp ((pkg cfgl-package) &optional inhibit-messages)
-  "Evaluate the `toggle' slot of passed PKG."
+  "Evaluate the `toggle' slot of passed PKG.
+If INHIBIT-MESSAGES is non nil then any message emitted by the toggle evaluation
+is ignored."
   (let ((message-log-max (unless inhibit-messages message-log-max))
         (toggle (oref pkg :toggle)))
     (eval toggle)))
@@ -987,7 +989,7 @@ return both used and unused packages."
             (or (null usedp)
                 (and (not (null (oref pkg :owners)))
                      (not (oref pkg :excluded))
-                     (cfgl-package-enabledp pkg))))))))
+                     (cfgl-package-enabledp pkg t))))))))
 
 (defun configuration-layer//get-private-layer-dir (name)
   "Return an absolute path to the private configuration layer string NAME."
@@ -1059,12 +1061,28 @@ Returns nil if the directory is not a category."
   ;; must have the final word on configuration choices. Let
   ;; `dotspacemacs-directory' override the private directory if it exists.
   (setq  configuration-layer--indexed-layers (make-hash-table :size 1024))
-  (let ((search-paths (append (list configuration-layer-directory)
-                              dotspacemacs-configuration-layer-path
-                              (list configuration-layer-private-layer-directory)
-                              (when dotspacemacs-directory
-                                (list dotspacemacs-directory))))
+  (let ((search-paths (append
+                       ;; layers shipped with spacemacs
+                       (list configuration-layer-directory)
+                       ;; layers in private folder ~/.emacs.d/private
+                       (list configuration-layer-private-directory)
+                       ;; layers in dotdirectory
+                       (when dotspacemacs-directory
+                         (list (expand-file-name (concat dotspacemacs-directory
+                                                         "layers/"))))
+                       ;; additional layer directories provided by the user
+                       dotspacemacs-configuration-layer-path))
         (discovered '()))
+    ;; filter out directories that don't exist
+    (setq search-paths (configuration-layer/filter-objects
+                        search-paths
+                        (lambda (x)
+                          (let ((exists (file-exists-p x)))
+                            (unless exists
+                              (configuration-layer//warning
+                               "Layer directory \"%s\" not found. Ignoring it."
+                               x))
+                            exists))))
     ;; depth-first search of subdirectories
     (while search-paths
       (let ((current-path (car search-paths)))
@@ -1091,7 +1109,9 @@ Returns nil if the directory is not a category."
                   (if indexed-layer
                       ;; the same layer may have been discovered twice,
                       ;; in which case we don't need a warning
-                      (unless (string-equal (oref indexed-layer :dir) sub)
+                      (unless (string-equal
+                               (directory-file-name (oref indexed-layer :dir))
+                               (directory-file-name sub))
                         (configuration-layer//warning
                          (concat
                           "Duplicated layer %s detected in directory \"%s\", "
@@ -1482,7 +1502,7 @@ wether the declared layer is an used one or not."
        ((null (oref pkg :owners))
         (spacemacs-buffer/message
          (format "%S ignored since it has no owner layer." pkg-name)))
-       ((not (cfgl-package-enabledp pkg t))
+       ((not (cfgl-package-enabledp pkg))
         (spacemacs-buffer/message (format "%S is toggled off." pkg-name)))
        (t
         ;; load-path
@@ -1666,8 +1686,10 @@ If called with a prefix argument ALWAYS-UPDATE, assume yes to update."
         (spacemacs-buffer/append
          (format "\n--> %s package(s) to be updated.\n" upgraded-count))
         (spacemacs-buffer/append
-         (concat "\nEmacs has to be restarted to actually install the "
-                 "new version of the packages (SPC q r).\n"))
+         (format
+          (concat "\nEmacs has to be restarted to actually install the "
+                  "new version of the packages%s.\n")
+          (if (member "restart-emacs" update-packages) "" " (SPC q r)")))
         (configuration-layer//cleanup-rollback-directory)
         (spacemacs//redisplay)))
     (when (eq upgrade-count 0)

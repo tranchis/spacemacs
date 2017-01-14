@@ -1,6 +1,6 @@
 ;;; packages.el --- Ruby on Rails Layer packages File for Spacemacs
 ;;
-;; Copyright (c) 2012-2016 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -85,5 +85,5 @@
     :mode (("\\.feature\\'" . feature-mode))))
 
 (defun ruby-on-rails/post-init-which-key ()
-  (push '("projectile-rails-\\(.+\\)" . "\\1")
-        which-key-description-replacement-alist))
+  (push '((nil . "projectile-rails-\\(.+\\)") . (nil . "\\1"))
+        which-key-replacement-alist))
