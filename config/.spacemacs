@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     yaml
      asciidoc
      python
      html
@@ -340,6 +341,7 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  (display-time-mode 1)
   (global-set-key "\M-x" 'clipboard-kill-region)
   (add-hook 'prog-mode-hook #'fci-mode)
   (add-hook 'prog-mode-hook #'toggle-truncate-lines)
@@ -352,6 +354,7 @@ you should place your code here."
   (global-set-key "\M-c" 'clipboard-kill-ring-save)
   (global-set-key "\M-v" 'clipboard-yank)
   (global-set-key "\M-r" 'paredit-raise-sexp)
+  (global-set-key "\M-f" 'cider-pprint-eval-defun-at-point)
   (add-hook 'prog-mode-hook 'linum-mode)
   (setq-default flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml")
   (setq-default dotspacemacs-configuration-layers '(
@@ -384,9 +387,10 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (adoc-mode markup-faces powerline parent-mode projectile flycheck flx smartparens iedit anzu evil goto-chg undo-tree diminish hydra highlight seq spinner pkg-info epl bind-map bind-key packed f s helm avy helm-core async popup package-build company-emacs-eclim eclim yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data flycheck-pos-tip pos-tip flycheck-clojure helm-gitignore helm-company helm-c-yasnippet smeargle orgit org noflet mmm-mode markdown-toc markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md evil-magit magit magit-popup git-commit with-editor ensime sbt-mode scala-mode company-statistics company clojure-snippets auto-yasnippet ac-ispell auto-complete sql-indent wgrep smex ivy-hydra counsel-projectile counsel swiper ivy clj-refactor inflections edn multiple-cursors paredit yasnippet peg cider-eval-sexp-fu cider queue clojure-mode ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spacemacs-theme spaceline restart-emacs request rainbow-delimiters quelpa popwin persp-mode pcre2el paradox org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu elisp-slime-nav dumb-jump define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
+    (yaml-mode powerline parent-mode projectile flycheck flx smartparens iedit anzu evil goto-chg undo-tree diminish hydra highlight seq spinner pkg-info epl bind-map bind-key packed f s helm avy helm-core async popup package-build company-emacs-eclim eclim yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data flycheck-pos-tip pos-tip flycheck-clojure helm-gitignore helm-company helm-c-yasnippet smeargle orgit org noflet mmm-mode markdown-toc markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md evil-magit magit magit-popup git-commit with-editor ensime sbt-mode scala-mode company-statistics company clojure-snippets auto-yasnippet ac-ispell auto-complete sql-indent wgrep smex ivy-hydra counsel-projectile counsel swiper ivy clj-refactor inflections edn multiple-cursors paredit yasnippet peg cider-eval-sexp-fu cider queue clojure-mode ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spacemacs-theme spaceline restart-emacs request rainbow-delimiters quelpa popwin persp-mode pcre2el paradox org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu elisp-slime-nav dumb-jump define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
