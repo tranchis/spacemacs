@@ -24,6 +24,7 @@
         helm-swoop
         helm-themes
         (helm-spacemacs-help :location local)
+        (helm-spacemacs-faq :location local)
         imenu
         persp-mode
         popwin
@@ -245,7 +246,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
       (defun spacemacs/helm-files-do-rg (&optional dir)
         "Search in files with `rg'."
         (interactive)
-        (let ((helm-ag-base-command "rg --smart-case --no-heading --vimgrep"))
+        (let ((helm-ag-base-command "rg --smart-case --no-heading --color never"))
           (helm-do-ag dir)))
 
       (defun spacemacs/helm-files-do-rg-region-or-symbol ()
@@ -308,7 +309,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
       (defun spacemacs/helm-buffers-do-rg (&optional _)
         "Search in opened buffers with `rg'."
         (interactive)
-        (let ((helm-ag-base-command "rg --smart-case --no-heading --vimgrep"))
+        (let ((helm-ag-base-command "rg --smart-case --no-heading --color never"))
           (helm-do-ag-buffers)))
 
       (defun spacemacs/helm-buffers-do-rg-region-or-symbol ()
@@ -571,25 +572,19 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
                helm-spacemacs-help-packages
                helm-spacemacs-help-docs
                helm-spacemacs-help-toggles)
-    :init
-    (progn
-      (defun spacemacs-base/helm-spacemacs-deprecated (arg)
-        "Provide helm-spacemacs with a binding's depreciation message."
-        (interactive "P")
-        (warn (concat "The 'SPC f e h' (or 'M-m f e h') binding is now "
-                      "deprecated and will be remove in the next release. "
-                      "Please use 'SPC h SPC' (or 'M-m h SPC') instead."))
-        (helm-spacemacs arg))
-      (spacemacs/set-leader-keys "feh" 'spacemacs-base/helm-spacemacs-deprecated)
-      (spacemacs/set-leader-keys "fef" 'helm-spacemacs-help-faq)
-      (spacemacs/set-leader-keys
-        "h ."   'helm-spacemacs-help-dotspacemacs
-        "h SPC" 'helm-spacemacs-help
-        "h f"   'helm-spacemacs-help-faq
-        "h l"   'helm-spacemacs-help-layers
-        "h p"   'helm-spacemacs-help-packages
-        "h r"   'helm-spacemacs-help-docs
-        "h t"   'helm-spacemacs-help-toggles))))
+    :init (spacemacs/set-leader-keys
+            "h ."   'helm-spacemacs-help-dotspacemacs
+            "h SPC" 'helm-spacemacs-help
+            "h f"   'helm-spacemacs-help-faq
+            "h l"   'helm-spacemacs-help-layers
+            "h p"   'helm-spacemacs-help-packages
+            "h r"   'helm-spacemacs-help-docs
+            "h t"   'helm-spacemacs-help-toggles)))
+
+(defun helm/init-helm-spacemacs-faq ()
+  (use-package helm-spacemacs-faq
+    :commands helm-spacemacs-help-faq
+    :init (spacemacs/set-leader-keys "h f" 'helm-spacemacs-help-faq)))
 
 (defun helm/init-helm-swoop ()
   (use-package helm-swoop
@@ -626,7 +621,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     :defer t
     :init
     (spacemacs/set-leader-keys
-      "Ts" 'helm-themes)))
+      "Ts" 'spacemacs/helm-themes)))
 
 (defun helm/post-init-imenu ()
   (spacemacs/set-leader-keys "ji" 'spacemacs/helm-jump-in-buffer))
