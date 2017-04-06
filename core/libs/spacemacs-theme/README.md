@@ -6,7 +6,7 @@
 ![spacemacs-theme](/../screenshots/spacemacs-theme.png)
 
 Spacemacs theme is an Emacs color theme that started as a theme for [spacemacs](https://github.com/syl20bnr/spacemacs).
-The theme comes with dark and light variants and it should work well with 256 color terminals. 
+The theme comes with dark and light variants and it should work well with 256 color terminals.
 
 ## Screenshots
 
@@ -155,3 +155,7 @@ If you are using [spacemacs](https://github.com/syl20bnr/spacemacs), you can put
 ```
 
 This will override `act1`, `act1` and `base` to use the specified colors.
+
+# Like the theme and want to use it in other places?
+
+Then check out this project [base16-builder](https://github.com/auduchinok/base16-builder).
