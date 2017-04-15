@@ -91,6 +91,7 @@
      - [[#escaping][Escaping]]
      - [[#executing-vim-and-emacs-exm-x-commands][Executing Vim and Emacs ex/M-x commands]]
      - [[#leader-key][Leader key]]
+     - [[#major-mode-leader-key][Major Mode leader key]]
      - [[#additional-text-objects][Additional text objects]]
    - [[#reserved-prefix-command-for-user][Reserved prefix command for user]]
    - [[#completion][Completion]]
@@ -187,15 +188,12 @@
    - [[#registers][Registers]]
    - [[#errors-handling][Errors handling]]
    - [[#compiling][Compiling]]
-   - [[#modes][Modes]]
-     - [[#major-mode-leader-key][Major Mode leader key]]
-     - [[#helm-1][Helm]]
-   - [[#emacs-server][Emacs Server]]
-     - [[#connecting-to-the-emacs-server][Connecting to the Emacs server]]
+ - [[#emacs-server][Emacs Server]]
+   - [[#connecting-to-the-emacs-server][Connecting to the Emacs server]]
    - [[#keeping-the-server-alive][Keeping the server alive]]
-   - [[#troubleshoot][Troubleshoot]]
-     - [[#loading-fails][Loading fails]]
-     - [[#upgradingdowngrading-emacs-version][Upgrading/Downgrading Emacs version]]
+ - [[#troubleshoot][Troubleshoot]]
+   - [[#loading-fails][Loading fails]]
+   - [[#upgradingdowngrading-emacs-version][Upgrading/Downgrading Emacs version]]
  - [[#achievements][Achievements]]
    - [[#issues][Issues]]
    - [[#merged-pull-requests][Merged Pull Requests]]
@@ -369,7 +367,7 @@ Where:
 | packages.el    | The list of packages and their configuration functions (init, post-init, etc...)                 |
 | funcs.el       | All functions defined in the layer (used in package configuration for instance)                  |
 | config.el      | Layer configuration (defines the layer variables default values and setup some config variables) |
-| keybindings.el | General key bindings no tied to a specific package configuration                                 |
+| keybindings.el | General key bindings not tied to a specific package configuration                                |
 
 =Packages= can be:
 - =ELPA= packages installed from an =ELPA= compliant repository
@@ -1264,6 +1262,7 @@ Some elements can be dynamically toggled:
 | ~SPC t m M~ | toggle the major mode                                           |
 | ~SPC t m n~ | toggle the cat! (if =colors= layer is declared in your dotfile) |
 | ~SPC t m p~ | toggle the point character position                             |
+| ~SPC t m s~ | toggle system monitor (displayed in the minibuffer)             |
 | ~SPC t m t~ | toggle the time                                                 |
 | ~SPC t m T~ | toggle the mode line itself                                     |
 | ~SPC t m v~ | toggle the version control info                                 |
@@ -1386,6 +1385,7 @@ can be reached using the =control= key.
 | ~SPC t y~   | =ⓨ=     | y     | [[https://github.com/capitaomorte/yasnippet][yasnippet]] mode                                                       |
 
 **** Customizing the mode-line
+***** Spaceline
 Spacemacs uses [[https://github.com/TheBB/spaceline][Spaceline]] to provide its mode-line. It consists of a number of
 /segments/ arranged on the left and right sides. These are defined in the
 variables =spaceline-left= and =spaceline-right=. Segments can be defined using
@@ -1393,6 +1393,24 @@ variables =spaceline-left= and =spaceline-right=. Segments can be defined using
 right hand side variables.
 
 Please see the Spaceline documentation for more information.
+
+***** Restore lighters
+Lighters are abbreviations displayed in the mode-line to identify running minor
+modes. Spacemacs diminishes most of them to make them more compact.
+
+If you want to restore the original lighter of a mode then use the function
+=spacemacs/diminish-undo= with the appropriate mode name.
+
+For example to undo diminish for =company=:
+
+#+BEGIN_SRC emacs-lisp
+(spacemacs|use-package-add-hook company
+    :post-config (spacemacs/diminish-undo 'company-mode))
+#+END_SRC
+
+Note that we use a =use-package= post init hook to be sure to override any
+lazily diminished lighters (see [[file:LAYERS.org][layers documentation]] for more information
+about lazy loading).
 
 * Layouts and workspaces
 Layouts are window configurations with buffer isolation, each layout can define
@@ -1621,6 +1639,19 @@ special key called the leader key which once pressed gives a whole new keyboard
 layer. The leader key is by default ~SPC~ (space). It is possible to change this
 key with the variable =dotspacemacs-leader-key=.
 
+*** Major Mode leader key
+Key bindings specific to the current =major mode= start with ~SPC m~. For
+convenience a shortcut key called the major mode leader key is set by default on
+~​,​~ which saves one precious keystroke.
+
+It is possible to change the major mode leader key by defining the variable
+=dotspacemacs-major-mode-leader-key= in your =~/.spacemacs=. For example to
+setup the key on tabulation:
+
+#+BEGIN_SRC emacs-lisp
+(setq-default dotspacemacs-major-mode-leader-key "<tab>")
+#+END_SRC
+
 *** Additional text objects
 Additional text objects are defined in Spacemacs:
 
@@ -1657,6 +1688,16 @@ Mastering your choice of completion system will make you a Spacemacs power user.
 
 *** Helm
 Do not hesitate to read the [[https://github.com/emacs-helm/helm/wiki][Helm documentation wiki]].
+
+Spacemacs add =hjkl= navigation to =helm= buffers:
+
+| Key Binding | Description                  |
+|-------------+------------------------------|
+| ~C-h~       | go to next source            |
+| ~C-H~       | describe key (replace ~C-h~) |
+| ~C-j~       | go to previous candidate     |
+| ~C-k~       | go to next candidate         |
+| ~C-l~       | same as ~return~             |
 
 **** C-z and Tab switch
 The command bound to ~C-z~ is much more useful than the one bound to Tab, so it
@@ -2069,7 +2110,7 @@ window resizing.
 | ~u~           | undo window layout (used to effectively undo a closed window) |
 | ~U~           | redo window layout                                            |
 | ~v~           | vertical split                                                |
-| ~V~           | horizontal split and focus new window                         |
+| ~V~           | vertical split and focus new window                           |
 | ~w~           | focus other window                                            |
 | Any other key | leave the transient state                                     |
 
@@ -2688,6 +2729,7 @@ Text related commands (start with ~x~):
 | ~SPC x a &~ | align region at &                                             |
 | ~SPC x a (~ | align region at (                                             |
 | ~SPC x a )~ | align region at )                                             |
+| ~SPC x a {~ | align region at {                                             |
 | ~SPC x a ​,​~ | align region at ,                                             |
 | ~SPC x a .~ | align region at . (for numeric tables)                        |
 | ~SPC x a :~ | align region at :                                             |
@@ -3221,36 +3263,11 @@ Spacemacs binds a few commands to support compiling a project.
    | ~SPC c m~   | =helm-make=                    |
    | ~SPC c r~   | recompile                      |
 
-** Modes
-*** Major Mode leader key
-Key bindings specific to the current =major mode= start with ~SPC m~. For
-convenience a shortcut key called the major mode leader key is set by default on
-~​,​~ which saves one precious keystroke.
-
-It is possible to change the major mode leader key by defining the variable
-=dotspacemacs-major-mode-leader-key= in your =~/.spacemacs=. For example to
-setup the key on tabulation:
-
-#+BEGIN_SRC emacs-lisp
-(setq-default dotspacemacs-major-mode-leader-key "<tab>")
-#+END_SRC
-
-*** Helm
-Spacemacs add =hjkl= navigation to =helm= buffers:
-
-    | Key Binding | Description                  |
-    |-------------+------------------------------|
-    | ~C-h~       | go to next source            |
-    | ~C-H~       | describe key (replace ~C-h~) |
-    | ~C-j~       | go to previous candidate     |
-    | ~C-k~       | go to next candidate         |
-    | ~C-l~       | same as ~return~             |
-
-** Emacs Server
+* Emacs Server
 Spacemacs starts a server at launch. This server is killed whenever you close
 your Emacs windows.
 
-*** Connecting to the Emacs server
+** Connecting to the Emacs server
 You can open a file in Emacs from the terminal using =emacsclient=. Use
 =emacsclient -c= to open the file in Emacs GUI. Use =emacsclient -t= to open the
 file in Emacs within the terminal.
@@ -3293,14 +3310,14 @@ server is to use the following bindings:
 | ~SPC q s~  | Save the buffers, quit Emacs and kill the server                         |
 | ~SPC q z~  | Kill the current frame                                                   |
 
-** Troubleshoot
-*** Loading fails
+* Troubleshoot
+** Loading fails
 If any errors happen during the loading the mode-line will turn red and the
 errors should appear inline in the startup buffer. Spacemacs should still be
 usable; if it is not then restart Emacs with =emacs --debug-init= and open a
 [[https://github.com/syl20bnr/spacemacs/issues][Github issue]] with the backtrace.
 
-*** Upgrading/Downgrading Emacs version
+** Upgrading/Downgrading Emacs version
 To ensure that packages are correctly compiled for the new Emacs version you
 installed, be sure to run the interactive command =spacemacs/recompile-elpa=
 with ~SPC SPC spacemacs/recompile-elpa~.

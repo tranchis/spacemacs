@@ -50,12 +50,14 @@
         dotspacemacs-emacs-command-key 'counsel-M-x
         ;; files
         "ff"  'counsel-find-file
+        "fel" 'counsel-find-library
         "fL"  'counsel-locate
         ;; help
         "?"   'counsel-descbinds
         "hdf" 'counsel-describe-function
         "hdm" 'spacemacs/describe-mode
         "hdv" 'counsel-describe-variable
+        "hi"  'counsel-info-lookup-symbol
         "hR"  'spacemacs/counsel-search-docs
         ;; insert
         "iu"  'counsel-unicode-char
@@ -164,6 +166,10 @@
        'counsel-recentf
        spacemacs--ivy-file-actions)
 
+      ;; mappings to quit minibuffer or enter transient state
+      (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
+      (define-key ivy-minibuffer-map (kbd "M-SPC") 'hydra-ivy/body)
+
       (ivy-mode 1)
       (global-set-key (kbd "C-c C-r") 'ivy-resume)
       (global-set-key (kbd "<f6>") 'ivy-resume)
@@ -177,7 +183,8 @@
       (ido-mode -1))))
 
 (defun ivy/init-ivy-hydra ()
-  (use-package ivy-hydra))
+  (use-package ivy-hydra)
+  (define-key hydra-ivy/keymap [escape] 'hydra-ivy/keyboard-escape-quit-and-exit))
 
 (defun ivy/post-init-persp-mode ()
   ;; based on https://gist.github.com/Bad-ptr/1aca1ec54c3bdb2ee80996eb2b68ad2d#file-persp-ivy-el
