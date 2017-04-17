@@ -54,3 +54,5 @@ private/
 /games/
 *.orig
 *.swp
+/doc/COMMUNITY.org
+/doc/CONTRIBUTING.org
