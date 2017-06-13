@@ -9,23 +9,15 @@
 ;;
 ;;; License: GPLv3
 
-(setq ipython-notebook-packages '(company
-                                  ein))
-
-(defun ipython-notebook/post-init-company ()
-  (spacemacs|add-company-backends
-    :backends ein:company-backend
-    :modes ein:notebook-mode))
+(setq ipython-notebook-packages '(ein))
 
 (defun ipython-notebook/init-ein ()
   (use-package ein
     :defer t
-    :commands (ein:notebooklist-open ein:notebooklist-login)
+    :commands ein:notebooklist-open
     :init
     (progn
-      (spacemacs/set-leader-keys
-        "ail" 'ein:notebooklist-login
-        "aio" 'ein:notebooklist-open)
+      (spacemacs/set-leader-keys "ain" 'ein:notebooklist-open)
       (with-eval-after-load 'ein-notebooklist
         (evilified-state-evilify-map ein:notebooklist-mode-map
           :mode ein:notebooklist-mode

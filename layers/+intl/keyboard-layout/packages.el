@@ -1,4 +1,4 @@
-;;; packages.el --- keyboard-layout Layer Packages File for Spacemacs
+;;; config.el --- keyboard-layout Layer Packages File for Spacemacs
 ;;
 ;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
 ;;
@@ -42,8 +42,6 @@
     (spacemacs|use-package-add-hook ace-window :post-init BODY)
     :bepo
     (setq aw-keys '(?a ?u ?i ?e ?t ?s ?r ?n))
-    :colemak
-    (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
     :dvorak
     (setq aw-keys '(?a ?o ?e ?u ?h ?t ?n ?s))))
 
@@ -55,8 +53,6 @@
     (spacemacs|use-package-add-hook avy :post-init BODY)
     :bepo
     (setq-default avy-keys '(?a ?u ?i ?e ?t ?s ?r ?n))
-    :colemak
-    (setq-default avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
     :dvorak
     (setq-default avy-keys '(?a ?o ?e ?u ?h ?t ?n ?s))))
 
@@ -175,9 +171,7 @@
     :loader
     (spacemacs|use-package-add-hook evil-escape :post-init BODY)
     :bepo
-    (setq-default evil-escape-key-sequence "gq")
-    :colemak
-    (setq-default evil-escape-key-sequence "tn")))
+    (setq-default evil-escape-key-sequence "gq")))
 
 (defun keyboard-layout/pre-init-evil-evilified-state ()
   (kl|config evil-evilified-state
@@ -314,14 +308,11 @@
     (spacemacs|use-package-add-hook magit :post-config BODY)
     :common
     (progn
-      (dolist (state (if evil-magit-use-y-for-yank
-                         (list evil-magit-state 'visual)
-                       (list evil-magit-state)))
-        (kl/evil-correct-keys state magit-mode-map
-          "j"
-          "k"
-          "C-j"
-          "C-k"))
+      (kl/evil-correct-keys evil-magit-state magit-mode-map
+        "j"
+        "k"
+        "C-j"
+        "C-k")
       (kl/evil-correct-keys 'normal evil-magit-toggle-text-minor-mode-map
         "C-j")
       (dolist (map (list magit-branch-section-map
@@ -445,18 +436,7 @@
         "gk" nil
         ;; additional
         (kbd "«") 'org-metaleft
-        (kbd "»") 'org-metaright))
-    :colemak
-    (progn
-      (spacemacs|use-package-add-hook evil-org
-        :post-config
-        (progn
-          (evil-define-key 'normal evil-org-mode-map
-            "O" 'org-forward-heading-same-level
-            "o" 'evil-forward-char
-            "E" 'org-forward-element
-            "I" 'org-backward-element
-            "N" 'org-backward-heading-same-level))))))
+        (kbd "»") 'org-metaright))))
 
 (defun keyboard-layout/pre-init-org-agenda ()
   (kl|config org-agenda
@@ -486,13 +466,13 @@
       "k"
       "l")))
 
-(defun keyboard-layout/pre-init-twittering-mode ()
+(defun kl/pre-init-twittering-mode ()
   (kl|config twittering-mode
     :description
     "Remap navigation keys in `twittering-mode'."
     :loader
-    (spacemacs|use-package-add-hook twittering-mode :post-config BODY)
-    :common
+    (spacemacs|use-package-add-hook twittering-mode :post-init BODY)
+    :config
     (kl/correct-keys twittering-mode-map
       "h"
       "j"

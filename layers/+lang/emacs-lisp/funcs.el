@@ -11,10 +11,9 @@
 
 
 
-;; Idea from http://www.reddit.com/r/emacs/comments/312ge1/i_created_this_function_because_i_was_tired_of/
+;; idea from http://www.reddit.com/r/emacs/comments/312ge1/i_created_this_function_because_i_was_tired_of/
 (defun spacemacs/eval-current-form ()
-  "Find and evaluate the current def* or set* command.
-Unlike `eval-defun', this does not go to topmost function."
+  "Looks for the current def* or set* command then evaluates, unlike `eval-defun', does not go to topmost function"
   (interactive)
   (save-excursion
     (search-backward-regexp "(def\\|(set")
@@ -40,9 +39,9 @@ Unlike `eval-defun', this does not go to topmost function."
   (eval-defun 'edebugit))
 
 (defun spacemacs/edebug-instrument-defun-off ()
-  "Toggle off instrumentalisation for the function under `defun'."
+  "Toggle on instrumentalisation for the function under `defun'."
   (interactive)
-  (eval-defun nil))
+  (eval-defun))
 
 (defun spacemacs/elisp-toggle-debug-expr-and-eval-func ()
   "Insert or remove debug expression, evaluate function and save buffer."

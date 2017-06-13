@@ -58,8 +58,6 @@
       ;; Explicitly run prog-mode hooks since ess-mode does not derive from
       ;; prog-mode major-mode
       (add-hook 'ess-mode-hook 'spacemacs/run-prog-mode-hooks)
-      (add-hook 'inferior-ess-mode-hook
-                'spacemacs//ess-fix-read-only-inferior-ess-mode)
       (when (configuration-layer/package-usedp 'company)
           (add-hook 'ess-mode-hook 'company-mode))))
 
@@ -71,6 +69,14 @@
           ess-expression-offset 2
           ess-nuke-trailing-whitespace-p t
           ess-default-style 'DEFAULT)
+
+    (defun spacemacs/ess-start-repl ()
+      "Start a REPL corresponding to the ess-language of the current buffer."
+      (interactive)
+      (cond
+       ((string= "S" ess-language) (call-interactively 'R))
+       ((string= "STA" ess-language) (call-interactively 'stata))
+       ((string= "SAS" ess-language) (call-interactively 'SAS))))
 
     (spacemacs/set-leader-keys-for-major-mode 'ess-julia-mode
       "'"  'julia
@@ -94,8 +100,8 @@
       "sl" 'ess-eval-line
       "sR" 'ess-eval-region-and-go
       "sr" 'ess-eval-region
-      "sF" 'ess-eval-function-and-go
-      "sf" 'ess-eval-function
+      "sT" 'ess-eval-function-and-go
+      "st" 'ess-eval-function
       ;; R helpers
       "hd" 'ess-R-dv-pprint
       "hi" 'ess-R-object-popup

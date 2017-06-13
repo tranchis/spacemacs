@@ -15,7 +15,6 @@
 
 ;; We define prefix commands only for the sake of which-key
 (setq spacemacs/key-binding-prefixes '(("a"   "applications")
-                                       ("A"   "other applications")
                                        ("ai"  "irc")
                                        ("as"  "shells")
                                        ("b"   "buffers")
@@ -36,7 +35,6 @@
                                        ("kD"  "delete-backward")
                                        ("k`"  "hybrid")
                                        ("n"   "narrow/numbers")
-                                       ("N"   "navigation")
                                        ("p"   "projects")
                                        ("p$"  "projects/shell")
                                        ("q"   "quit")
@@ -47,7 +45,6 @@
                                        ("sa"  "ag")
                                        ("sg"  "grep")
                                        ("sk"  "ack")
-                                       ("sr"  "ripgrep")
                                        ("st"  "pt")
                                        ("sw"  "web")
                                        ("t"   "toggles")
@@ -123,15 +120,10 @@
   "bd"    'spacemacs/kill-this-buffer
   "be"    'spacemacs/safe-erase-buffer
   "bh"    'spacemacs/home
-  "b C-d" 'spacemacs/kill-other-buffers
-  "b C-S-d" 'spacemacs/kill-matching-buffers-rudely
+  "b C-d" 'spacemacs/kill-matching-buffers-rudely
   "bn"    'next-buffer
-  "bm"    'spacemacs/switch-to-messages-buffer
-  "b N h" 'spacemacs/new-empty-buffer-left
-  "b N j" 'spacemacs/new-empty-buffer-below
-  "b N k" 'spacemacs/new-empty-buffer-above
-  "b N l" 'spacemacs/new-empty-buffer-right
-  "b N n" 'spacemacs/new-empty-buffer
+  "bm"    'spacemacs/kill-other-buffers
+  "bN"    'spacemacs/new-empty-buffer
   "bP"    'spacemacs/copy-clipboard-to-whole-buffer
   "bp"    'previous-buffer
   "bR"    'spacemacs/safe-revert-buffer
@@ -174,7 +166,6 @@
   :bindings
   ("n" spacemacs/next-error "next")
   ("p" spacemacs/previous-error "prev")
-  ("N" spacemacs/previous-error "prev")
   ("q" nil "quit" :exit t)
   :evil-leader "e.")
 ;; file -----------------------------------------------------------------------
@@ -220,6 +211,8 @@
   "ik" 'spacemacs/evil-insert-line-above
   "ij" 'spacemacs/evil-insert-line-below)
 ;; format ---------------------------------------------------------------------
+;; `SPC j k' key binding for a frequent action: go and indent line below the point
+;; `SPC J' split the current line at point and indent it
 (spacemacs/set-leader-keys
   "jo" 'open-line
   "j=" 'spacemacs/indent-region-or-buffer
@@ -293,7 +286,6 @@
   :documentation "Toggle display of backtrace when an error happens."
   :evil-leader "tD")
 (spacemacs|add-toggle fringe
-  :if (fboundp 'fringe-mode)
   :status (not (equal fringe-mode 0))
   :on (call-interactively 'fringe-mode)
   :off (fringe-mode 0)
@@ -353,7 +345,7 @@
   "qs" 'spacemacs/save-buffers-kill-emacs
   "qq" 'spacemacs/prompt-kill-emacs
   "qQ" 'spacemacs/kill-emacs
-  "qf" 'spacemacs/frame-killer)
+  "qz" 'spacemacs/frame-killer)
 ;; window ---------------------------------------------------------------------
 (defun split-window-below-and-focus ()
   "Split the window vertically and focus the new window."
@@ -423,10 +415,6 @@
   "xa&" 'spacemacs/align-repeat-ampersand
   "xa(" 'spacemacs/align-repeat-left-paren
   "xa)" 'spacemacs/align-repeat-right-paren
-  "xa{" 'spacemacs/align-repeat-left-curly-brace
-  "xa}" 'spacemacs/align-repeat-right-curly-brace
-  "xa[" 'spacemacs/align-repeat-left-square-brace
-  "xa]" 'spacemacs/align-repeat-right-square-brace
   "xa," 'spacemacs/align-repeat-comma
   "xa." 'spacemacs/align-repeat-decimal
   "xa:" 'spacemacs/align-repeat-colon
@@ -439,7 +427,6 @@
   "xar" 'spacemacs/align-repeat
   "xa|" 'spacemacs/align-repeat-bar
   "xc"  'count-region
-  "xd SPC" 'just-one-space
   "xdw" 'delete-trailing-whitespace
   "xjc" 'set-justification-center
   "xjf" 'set-justification-full

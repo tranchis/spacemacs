@@ -11,6 +11,9 @@
 
 ;; Variables
 
+(spacemacs|defvar-company-backends enh-ruby-mode)
+(spacemacs|defvar-company-backends ruby-mode)
+
 (spacemacs|define-jump-handlers enh-ruby-mode)
 (spacemacs|define-jump-handlers ruby-mode)
 
@@ -23,6 +26,3 @@ Possible values are `rbenv', `rvm' or `chruby'.)")
 
 (defvar ruby-test-runner 'ruby-test
   "Test runner to use. Possible values are `ruby-test', `minitest' or `rspec'.")
-
-(defvar ruby-highlight-debugger-keywords t
-  "If non-nil, enable highlight for debugger keywords.")

@@ -16,7 +16,6 @@
         evil-exchange
         evil-iedit-state
         evil-indent-plus
-        evil-lion
         evil-lisp-state
         ;; for testing purpose, contribute by reporting bugs and sending PRs
         ;; to https://github.com/gabesoft/evil-mc
@@ -99,18 +98,6 @@
   (use-package evil-indent-plus
     :init (evil-indent-plus-default-bindings)))
 
-(defun spacemacs-evil/init-evil-lion ()
-  (use-package evil-lion
-    :init
-    (progn
-      ;; Override the default keys, as they collide
-      (setq evil-lion-left-align-key nil
-            evil-lion-right-align-key nil)
-      (spacemacs/set-leader-keys
-        "xal" 'evil-lion-left
-        "xaL" 'evil-lion-right)
-      (evil-lion-mode))))
-
 (defun spacemacs-evil/init-evil-lisp-state ()
   (use-package evil-lisp-state
     :init (setq evil-lisp-state-global t)
@@ -120,11 +107,12 @@
   (use-package evil-mc
     :defer t
     :init
-    (progn
-      ;; evil-mc is not compatible with the paste transient state
-      (define-key evil-normal-state-map "p" 'spacemacs/evil-mc-paste-after)
-      (define-key evil-normal-state-map "P" 'spacemacs/evil-mc-paste-before)
-      (setq evil-mc-one-cursor-show-mode-line-text nil))))
+    ;; remove emc prefix when there is not multiple cursors
+    (setq evil-mc-mode-line
+          `(:eval (when (> (evil-mc-get-cursor-count) 1)
+                    (format ,(propertize " %s:%d" 'face 'cursor)
+                            evil-mc-mode-line-prefix
+                            (evil-mc-get-cursor-count)))))))
 
 ;; other commenting functions in funcs.el with keybinds in keybindings.el
 (defun spacemacs-evil/init-evil-nerd-commenter ()

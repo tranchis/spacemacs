@@ -253,7 +253,7 @@
 - Activating =linum-relative= now correctly activates =linum= (thanks to deb0ch)
 **** C/C++
 - Match entire path after -I when reading cc-file (function
-  =spacemacs/company-load-clang-complete-file=) (thanks to jlewallen)
+  =company-mode/load-clang-complete-file=) (thanks to jlewallen)
 **** Common-lisp
 - Enable fuzzy matching for auto-completion (thanks to tuhdo)
 **** D
@@ -344,7 +344,7 @@
 - Improve search of nearest file in compilation database (thanks to deb0ch)
 ** 0.200.2 (2016/10/14)
 *** Fixes
-- Fix compatibility with the =xterm-color= package (thanks to bixuanzju)
+-  Fix compatibility with the =xterm-color= package (thanks to bixuanzju)
 ** 0.200.1 (2016/10/09)
 *** Fixes
 - Restore missing support for custom Evil ex command key via the new
@@ -421,7 +421,6 @@
   - ~SPC h b~ for =helm-filtered-bookmarks~is now ~SPC f b~
   - ~SPC h l~ for =helm-resume= is now ~SPC r l~
   - ~SPC h L~ for =helm-locate-library= is now ~SPC f e l~
-- Change default value of =dotspacemacs-remap-Y-to-y$= to =nil=
 - Git key bindings under ~SPC g~ have been reorganised to free up some keys
   and capitalize on =Magit= dispatch menu to keep things consistent (see
   =git= section in change log for more information)
@@ -523,7 +522,6 @@
   - agenda
   - todos
   (thanks to tonyday567)
-- Change default value of =dotspacemacs-remap-Y-to-y$= to =nil=
 - Change default value of =dotspacemacs-startup-lists= to =nil=
 - Change default value of =dotspacemacs-check-for-update= to =nil=
 - Remove support for value =all= in variable =dotspacemacs-configuration-layers=

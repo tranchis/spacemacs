@@ -17,12 +17,10 @@
     ggtags
     helm-gtags
     omnisharp
-    flycheck
     ))
 
 (defun csharp/init-omnisharp ()
-  ;; Load omnisharp-mode with csharp-mode,
-  ;; this should start the omnisharp server automatically
+  ;; Load omnisharp-mode with csharp-mode, this should start the omnisharp server automatically
   (add-hook 'csharp-mode-hook 'omnisharp-mode)
   (use-package omnisharp
     :defer t
@@ -33,6 +31,7 @@
         ;; Note: if you are using a roslyn based omnisharp server you can
         ;; set back this variable to t.
         (setq omnisharp-auto-complete-want-documentation nil))
+      (push 'company-omnisharp company-backends-csharp-mode)
       (add-to-list 'spacemacs-jump-handlers-csharp-mode
                    '(omnisharp-go-to-definition :async t)))
     :config
@@ -40,15 +39,13 @@
       (spacemacs/declare-prefix-for-mode 'csharp-mode "mc" "csharp/compile")
       (spacemacs/declare-prefix-for-mode 'csharp-mode "mf" "csharp/file")
       (spacemacs/declare-prefix-for-mode 'csharp-mode "mg" "csharp/navigation")
-      (spacemacs/declare-prefix-for-mode 'csharp-mode "mh"
-                                         "csharp/documentation")
+      (spacemacs/declare-prefix-for-mode 'csharp-mode "mh" "csharp/documentation")
       (spacemacs/declare-prefix-for-mode 'csharp-mode "mr" "csharp/refactoring")
       (spacemacs/declare-prefix-for-mode 'csharp-mode "ms" "csharp/server")
       (spacemacs/declare-prefix-for-mode 'csharp-mode "mt" "csharp/tests")
       (spacemacs/set-leader-keys-for-major-mode 'csharp-mode
         ;; Compile
-        ;; Only one compile command so use top-level
-        "cc" 'omnisharp-build-in-emacs
+        "cc" 'omnisharp-build-in-emacs ;; Only one compile command so use top-level
         ;; Solution/project manipulation
         "fa" 'omnisharp-add-to-solution-current-file
         "fA" 'omnisharp-add-to-solution-dired-selected-files
@@ -75,8 +72,7 @@
         "rm" 'omnisharp-rename
         "rM" 'omnisharp-rename-interactively
         "rr" 'omnisharp-run-code-action-refactoring
-        ;; Server manipulation, inspired spacemacs REPL bindings since C# does
-        ;; not provice a REPL
+        ;; Server manipulation, inspired spacemacs REPL bindings since C# does not provice a REPL
         "ss" 'omnisharp-start-omnisharp-server
         "sS" 'omnisharp-stop-server
         "sr" 'omnisharp-reload-solution
@@ -90,10 +86,7 @@
         "=" 'omnisharp-code-format))))
 
 (defun csharp/post-init-company ()
-  (when (configuration-layer/package-usedp 'omnisharp)
-    (spacemacs|add-company-backends
-      :backends company-omnisharp
-      :modes csharp-mode)))
+  (spacemacs|add-company-hook csharp-mode))
 
 (defun csharp/init-csharp-mode ()
   (use-package csharp-mode
@@ -101,13 +94,9 @@
 
 (defun csharp/post-init-evil-matchit ()
   (with-eval-after-load 'evil-matchit
-    (plist-put evilmi-plugins 'csharp-mode
-               '((evilmi-simple-get-tag evilmi-simple-jump)
-                 (evilmi-c-get-tag evilmi-c-jump))))
+    (plist-put evilmi-plugins 'csharp-mode '((evilmi-simple-get-tag evilmi-simple-jump)
+                                             (evilmi-c-get-tag evilmi-c-jump))))
   (add-hook 'csharp-mode-hook 'turn-on-evil-matchit-mode))
-
-(defun csharp/post-init-flycheck ()
-  (spacemacs/enable-flycheck 'csharp-mode))
 
 (defun csharp/post-init-ggtags ()
   (add-hook 'csharp-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))

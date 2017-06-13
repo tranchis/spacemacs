@@ -41,11 +41,6 @@
     :override-mode-name spacemacs-leader-override-mode))
 
 (defun spacemacs-bootstrap/init-evil ()
-  ;; ensure that the search module is set at startup
-  ;; must be called before evil is required to really take effect.
-  (spacemacs/set-evil-search-module dotspacemacs-editing-style)
-  (add-hook 'spacemacs-editing-style-hook 'spacemacs/set-evil-search-module)
-
   ;; evil-mode is mandatory for Spacemacs to work properly
   ;; evil must be require explicitly, the autoload seems to not
   ;; work properly sometimes.
@@ -81,7 +76,12 @@
            (set (intern (format "evil-%s-state-cursor" state))
                 (list (when dotspacemacs-colorize-cursor-according-to-state color)
                       cursor)))
+
   (add-hook 'spacemacs-post-theme-change-hook 'spacemacs/set-state-faces)
+
+  ;; put back refresh of the cursor on post-command-hook see status of:
+  ;; https://bitbucket.org/lyro/evil/issue/502/cursor-is-not-refreshed-in-some-cases
+  ;; (add-hook 'post-command-hook 'evil-refresh-cursor)
 
   ;; evil ex-command
   (define-key evil-normal-state-map (kbd dotspacemacs-ex-command-key) 'evil-ex)
@@ -140,50 +140,17 @@
   ;; scrolling transient state
   (spacemacs|define-transient-state scroll
     :title "Scrolling Transient State"
-    :doc "
- Buffer^^^^              Full page^^^^     Half page^^^^        Line/column^^^^
- ──────^^^^───────────── ─────────^^^^──── ─────────^^^^─────── ───────────^^^^─────
- [_<_/_>_] beginning/end [_f_/_b_] down/up [_J_/_K_] down/up    [_j_/_k_] down/up
-  ^ ^ ^ ^                 ^ ^ ^ ^          [_H_/_L_] left/right [_h_/_l_] left/right
-  ^ ^ ^ ^                 ^ ^ ^ ^          [_d_/_u_] down/up     ^ ^ ^ ^"
     :bindings
-    ;; buffer
-    ("<" evil-goto-first-line)
-    (">" evil-goto-line)
-    ;; full page
-    ("f" evil-scroll-page-down)
-    ("b" evil-scroll-page-up)
+    ("," evil-scroll-page-up "page up")
+    ("." evil-scroll-page-down "page down")
     ;; half page
-    ("d" evil-scroll-down)
-    ("u" evil-scroll-up)
-    ("J" evil-scroll-down)
-    ("K" evil-scroll-up)
-    ("H" evil-scroll-left)
-    ("L" evil-scroll-right)
-    ;; lines and columns
-    ("j" evil-scroll-line-down)
-    ("k" evil-scroll-line-up)
-    ("h" evil-scroll-column-left)
-    ("l" evil-scroll-column-right))
+    ("<" evil-scroll-up "half page up")
+    (">" evil-scroll-down "half page down"))
   (spacemacs/set-leader-keys
-    ;; buffer
-    "N<" 'spacemacs/scroll-transient-state/evil-goto-first-line
-    "N>" 'spacemacs/scroll-transient-state/evil-goto-line
-    ;; full page
-    "Nf" 'spacemacs/scroll-transient-state/evil-scroll-page-down
-    "Nb" 'spacemacs/scroll-transient-state/evil-scroll-page-up
-    ;; half page
-    "Nd" 'spacemacs/scroll-transient-state/evil-scroll-down
-    "Nu" 'spacemacs/scroll-transient-state/evil-scroll-up
-    "NJ" 'spacemacs/scroll-transient-state/evil-scroll-down
-    "NK" 'spacemacs/scroll-transient-state/evil-scroll-up
-    "NH" 'spacemacs/scroll-transient-state/evil-scroll-left
-    "NL" 'spacemacs/scroll-transient-state/evil-scroll-right
-    ;; lines and columns
-    "Nj" 'spacemacs/scroll-transient-state/evil-scroll-line-down
-    "Nk" 'spacemacs/scroll-transient-state/evil-scroll-line-up
-    "Nh" 'spacemacs/scroll-transient-state/evil-scroll-column-left
-    "Nl" 'spacemacs/scroll-transient-state/evil-scroll-column-right)
+    "n," 'spacemacs/scroll-transient-state/evil-scroll-page-up
+    "n." 'spacemacs/scroll-transient-state/evil-scroll-page-down
+    "n<" 'spacemacs/scroll-transient-state/evil-scroll-up
+    "n>" 'spacemacs/scroll-transient-state/evil-scroll-down)
 
   ;; pasting transient-state
   (evil-define-command spacemacs//transient-state-0 ()
@@ -249,10 +216,6 @@
   (spacemacs|define-text-object "-" "hyphen" "-" "-")
   (spacemacs|define-text-object "~" "tilde" "~" "~")
   (spacemacs|define-text-object "=" "equal" "=" "=")
-  (spacemacs|define-text-object "«" "double-angle-bracket" "«" "»")
-  (spacemacs|define-text-object "｢" "corner-bracket" "｢" "｣")
-  (spacemacs|define-text-object "‘" "single-quotation-mark" "‘" "’")
-  (spacemacs|define-text-object "“" "double-quotation-mark" "“" "”")
   (evil-define-text-object evil-pasted (count &rest args)
     (list (save-excursion (evil-goto-mark ?\[) (point))
           (save-excursion (evil-goto-mark ?\]) (point))))
@@ -288,11 +251,7 @@
       (kbd "C-j") 'comint-next-input))
   (evil-define-key 'normal comint-mode-map
     (kbd "C-k") 'comint-previous-input
-    (kbd "C-j") 'comint-next-input)
-
-  ;; ignore repeat
-  (evil-declare-ignore-repeat 'spacemacs/next-error)
-  (evil-declare-ignore-repeat 'spacemacs/previous-error))
+    (kbd "C-j") 'comint-next-input))
 
 (defun spacemacs-bootstrap/init-hydra ()
   (require 'hydra)
@@ -350,97 +309,13 @@
       (push (cons (cons nil (concat "\\`" (car nd) "\\'")) (cons nil (cdr nd)))
             which-key-replacement-alist)))
 
-  ;; Group together sequence and identical key entries in the which-key popup
-  ;; SPC h k- Top-level bindings
-  ;; Remove spaces around the two dots ".."
-  (push '(("\\(.*\\)1 .. 9" . "digit-argument") .
-          ("\\11..9" . "digit-argument"))
+  (push '(("\\(.*\\) 0" . "select-window-0") . ("\\1 0..9" . "window 0..9"))
         which-key-replacement-alist)
+  (push '((nil . "select-window-[1-9]") . t) which-key-replacement-alist)
 
-  ;; And remove the modifier key(s) before the last nr in the sequence
-  (push '(("\\(.*\\)C-0 .. C-5" . "digit-argument") .
-          ("\\1C-0..5" . "digit-argument"))
+  (push '(("\\(.*\\) 1" . "buffer-to-window-1") . ("\\1 1..9" . "buffer to window 1..9"))
         which-key-replacement-alist)
-
-  (push '(("\\(.*\\)C-7 .. C-9" . "digit-argument") .
-          ("\\1C-7..9" . "digit-argument"))
-        which-key-replacement-alist)
-
-  (push '(("\\(.*\\)C-M-0 .. C-M-9" . "digit-argument") .
-          ("\\1C-M-0..9" . "digit-argument"))
-        which-key-replacement-alist)
-
-  ;; Rename the entry for M-0 in the SPC h k Top-level bindings,
-  ;; and for 0 in the SPC- Spacemacs root
-  (push '(("\\(.*\\)0" . "winum-select-window-0-or-10") .
-          ("\\10" . "select window 0 or 10"))
-        which-key-replacement-alist)
-
-  ;; Rename the entry for M-1 in the SPC h k Top-level bindings,
-  ;; and for 1 in the SPC- Spacemacs root, to 1..9
-  (push '(("\\(.*\\)1" . "winum-select-window-1") .
-          ("\\11..9" . "select window 1..9"))
-        which-key-replacement-alist)
-
-  ;; Hide the entries for M-[2-9] in the SPC h k Top-level bindings,
-  ;; and for [2-9] in the SPC- Spacemacs root
-  (push '((nil . "winum-select-window-[2-9]") . t)
-        which-key-replacement-alist)
-
-  ;; SPC- Spacemacs root
-  ;; Combine the ` (backtick) and ² (superscript 2) key entries
-  (push '(("\\(.*\\)`" . "winum-select-window-by-number") .
-          ("\\1`,²" . "select window by number"))
-        which-key-replacement-alist)
-
-  ;; hide the "² -> winum-select-window-by-number" entry
-  (push '(("\\(.*\\)²" . nil) . t)
-        which-key-replacement-alist)
-
-  ;; SPC b- buffers
-  ;; rename the buffer-to-window-1 entry, to 1..9
-  (push '(("\\(.*\\)1" . "buffer-to-window-1") .
-          ("\\11..9" . "buffer to window 1..9"))
-        which-key-replacement-alist)
-
-  ;; hide the "[2-9] -> buffer-to-window-[2-9]" entries
-  (push '((nil . "buffer-to-window-[2-9]") . t)
-        which-key-replacement-alist)
-
-  ;; SPC k- lisp
-  ;; rename "1 .. 9 -> digit-argument" to "1..9 -> digit-argument"
-  (push '(("\\(.*\\)1 .. 9" . "evil-lisp-state-digit-argument") .
-          ("\\11..9" . "digit-argument"))
-        which-key-replacement-alist)
-
-  ;; C-c C-w-
-  ;; rename the eyebrowse-switch-to-window-config-0 entry, to 0..9
-  (push '(("\\(.*\\)0" . "eyebrowse-switch-to-window-config-0") .
-          ("\\10..9" . "eyebrowse-switch-to-window-config-0..9"))
-        which-key-replacement-alist)
-
-  ;; hide the "[1-9] -> eyebrowse-switch-to-window-config-[1-9]" entries
-  (push '((nil . "eyebrowse-switch-to-window-config-[1-9]") . t)
-        which-key-replacement-alist)
-
-  ;; Combine the c and C-c key entries
-  (push '(("\\(.*\\)C-c C-w c" . "eyebrowse-create-window-config") .
-          ("\\1c,C-c" . "eyebrowse-create-window-config"))
-        which-key-replacement-alist)
-
-  ;; hide the "C-c -> eyebrowse-create-window-config" entry
-  (push '(("\\(.*\\)C-c C-w C-c" . "eyebrowse-create-window-config") . t)
-          which-key-replacement-alist)
-
-  ;; C-c C-d-
-  ;; Combine the d and C-d key entries
-  (push '(("\\(.*\\)C-c C-d d" . "elisp-slime-nav-describe-elisp-thing-at-point") .
-          ("\\1d,C-d" . "elisp-slime-nav-describe-elisp-thing-at-point"))
-        which-key-replacement-alist)
-
-  ;; hide the "C-d -> elisp-slime-nav-describe-elisp-thing-at-point" entry
-  (push '(("\\(.*\\)C-c C-d C-d" . "elisp-slime-nav-describe-elisp-thing-at-point") . t)
-          which-key-replacement-alist)
+  (push '((nil . "buffer-to-window-[2-9]") . t) which-key-replacement-alist)
 
   (dolist (leader-key `(,dotspacemacs-leader-key ,dotspacemacs-emacs-leader-key))
     (which-key-add-key-based-replacements

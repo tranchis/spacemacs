@@ -23,7 +23,6 @@
            ("\\.rackdiag\\'"  . graphviz-dot-mode)
            ("\\.dot\\'"       . graphviz-dot-mode)
            ("\\.gv\\'"        . graphviz-dot-mode))
-    :init (setq graphviz-dot-indent-width tab-width)
     :config
     (progn
       (spacemacs|add-toggle graphviz-live-reload

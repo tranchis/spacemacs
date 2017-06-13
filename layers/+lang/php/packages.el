@@ -11,6 +11,7 @@
 
 (setq php-packages
       '(
+        company
         drupal-mode
         eldoc
         flycheck
@@ -21,8 +22,10 @@
         php-mode
         phpcbf
         phpunit
-        (company-php :toggle (configuration-layer/package-usedp 'company))
         ))
+
+(defun php/post-init-company ()
+  (spacemacs|add-company-hook php-mode))
 
 (defun php/init-drupal-mode ()
   (use-package drupal-mode
@@ -32,7 +35,7 @@
   (add-hook 'php-mode-hook 'eldoc-mode))
 
 (defun php/post-init-flycheck ()
-  (spacemacs/enable-flycheck 'php-mode))
+  (spacemacs/add-flycheck-hook 'php-mode))
 
 (defun php/post-init-ggtags ()
   (add-hook 'php-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))
@@ -60,16 +63,3 @@
 (defun php/init-phpunit ()
   (use-package phpunit
     :defer t))
-
-(defun php/init-company-php ()
-  (use-package company-php
-    :defer t
-    :init
-    (progn
-      (push 'ac-php-find-symbol-at-point spacemacs-jump-handlers-php-mode)
-      (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
-      (spacemacs|add-company-backends
-        :modes php-mode
-        :variables
-        company-minimum-prefix-length 1000
-        :backends company-ac-php-backend))))

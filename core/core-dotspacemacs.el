@@ -75,10 +75,10 @@ Paths must have a trailing slash (ie. `~/.mycontribs/')")
 (defvar dotspacemacs-install-packages 'used-only
   "Defines the behaviour of Spacemacs when installing packages.
 Possible values are `used-only', `used-but-keep-unused' and `all'. `used-only'
-installs only explicitly used packages and deletes any unused packages as well
+installs only explicitly used packages and uninstall any unused packages as well
 as their unused dependencies. `used-but-keep-unused' installs only the used
-packages but won't delete unused ones. `all' installs *all*
-packages supported by Spacemacs and never uninstalls them.")
+packages but won't uninstall them if they become unused. `all' installs *all*
+packages supported by Spacemacs and never uninstall them.")
 
 (defvar dotspacemacs-enable-lazy-installation 'unused
   "Lazy installation of layers (i.e. layers are installed only when a file
@@ -99,10 +99,6 @@ a layer lazily.")
 wrapped in a layer. If you need some configuration for these
 packages then consider to create a layer, you can also put the
 configuration in `dotspacemacs/user-config'.")
-
-(defvar dotspacemacs--additional-theme-packages '()
-  "Same as `dotspacemacs-additonal-packages' but reserved for themes declared
-in `dotspacemacs-themes'.")
 
 (defvar dotspacemacs-editing-style 'vim
   "One of `vim', `emacs' or `hybrid'.
@@ -138,14 +134,6 @@ whenever you start Emacs.")
   "List of themes, the first of the list is loaded when spacemacs starts.
 Press `SPC T n' to cycle to the next theme in the list (works great
 with 2 themes variants, one dark and one light")
-
-(defvar dotspacemacs-frame-title-format "%I@%S"
-  "Default format string for a frame title bar, using the
-  original format spec, and additional customizations.")
-
-(defvar dotspacemacs-icon-title-format nil
-  "Default format string for a icon title bar, using the
-  original format spec, and additional customizations.")
 
 (defvar dotspacemacs-colorize-cursor-according-to-state t
   "If non nil the cursor color matches the state color in GUI Emacs.")
@@ -216,10 +204,6 @@ if used there.")
   "If non nil then the last auto saved layouts are resume automatically upon
 start.")
 
-(defvar dotspacemacs-auto-generate-layout-names nil
-  "If non-nil, auto-generate layout name when creating new layouts.
-Only has effect when using the \"jump to layout by number\" commands.")
-
 (defvar dotspacemacs-max-rollback-slots 5
   "Maximum number of rollback slots to keep in the cache.")
 
@@ -266,14 +250,6 @@ key sequence. Setting this variable is equivalent to setting
   "Location of the which-key popup buffer. Possible choices are bottom,
 right, and right-then-bottom. The last one will display on the
 right if possible and fallback to bottom if not.")
-
-(defvar dotspacemacs-switch-to-buffer-prefers-purpose nil
-  "Control where `switch-to-buffer' displays the buffer.
-If nil, `switch-to-buffer' displays the buffer in the current
-window even if another same-purpose window is available. If non
-nil, `switch-to-buffer' displays the buffer in a same-purpose
-window even if the buffer can be displayed in the current
-window.")
 
 (defvar dotspacemacs-loading-progress-bar t
   "If non nil a progress bar is displayed when spacemacs is loading. This
@@ -340,17 +316,13 @@ restricts line-number to the specified list of major-mode.")
 
 (defvar dotspacemacs-smart-closing-parenthesis nil
   "If non-nil pressing the closing parenthesis `)' key in insert mode passes
-over any automatically added closing parenthesis, bracket, quote, etc…
-This can be temporary disabled by pressing `C-q' before `)'. (default nil)")
-
-(defvar dotspacemacs-zone-out-when-idle nil
-  "Either nil or a number of seconds. If non-nil zone out after the specified
-number of seconds.")
+  over any automatically added closing parenthesis, bracket, quote, etc…
+  This can be temporary disabled by pressing `C-q' before `)'. (default nil)")
 
 (defvar dotspacemacs-highlight-delimiters 'all
   "Select a scope to highlight delimiters. Possible values are `any',
 `current', `all' or `nil'. Default is `all' (highlight any scope and
-emphasis the current one.")
+ emphasis the current one.")
 
 (defvar dotspacemacs-whitespace-cleanup nil
   "delete whitespace while saving buffer. possible values are `all'
@@ -358,9 +330,9 @@ to aggressively delete empty lines and long sequences of whitespace, `trailing'
 to delete only the whitespace at end of lines, `changed' to delete only
 whitespace for changed lines or `nil' to disable cleanup.")
 
-(defvar dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
+(defvar dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
   "List of search tool executable names. Spacemacs uses the first installed
-tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.")
+tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.")
 
 (defvar dotspacemacs-default-package-repository 'melpa-stable
   "The default package repository used if no explicit repository has been
@@ -391,8 +363,8 @@ List sizes may be nil, in which case
 
 (defmacro dotspacemacs|call-func (func &optional msg)
   "Call the function from the dotfile only if it is bound.
-If MSG is not nil then display a message in `*Messages*'. Errors
-are caught and signaled to user in spacemacs buffer."
+If MSG is not nil then display a message in `*Messages'. Errors
+are caught and signalled to user in spacemacs buffer."
   `(progn
      (when ,msg (spacemacs-buffer/message ,msg))
      (when (fboundp ',func)
@@ -446,13 +418,10 @@ Returns non nil if the layer has been effectively inserted."
     (with-current-buffer (find-file-noselect (dotspacemacs/location))
       (beginning-of-buffer)
       (let ((insert-point (re-search-forward
-                           "dotspacemacs-configuration-layers\\s-*\n?[^(]*\\((\\)")))
-        (insert (format "%S" layer-name))
-        (unless (equal (point) (point-at-eol))
-          (insert "\n"))
-        (indent-region insert-point (min (point-max)
-                                         (+ insert-point 2
-                                            (length (symbol-name layer-name)))))
+                           "dotspacemacs-configuration-layers *\n?.*\\((\\)")))
+        (insert (format "\n%S" layer-name))
+        (indent-region insert-point (+ insert-point
+                                       (length (symbol-name layer-name))))
         (save-buffer)))
     (load-file (dotspacemacs/location))
     t))
@@ -611,54 +580,6 @@ If ARG is non nil then Ask questions to the user before installing the dotfile."
         (unless (with-demoted-errors "Error loading .spacemacs: %S"
                   (load dotspacemacs))
           (dotspacemacs/safe-load)))))
-
-(defun spacemacs/title-prepare (title-format)
-  "A string is printed verbatim except for %-constructs.
-  %a -- prints the `abbreviated-file-name', or `buffer-name'
-  %t -- prints `projectile-project-name'
-  %I -- prints `invocation-name'
-  %S -- prints `system-name'
-  %U -- prints contents of $USER
-  %b -- prints buffer name
-  %f -- prints visited file name
-  %F -- prints frame name
-  %s -- prints process status
-  %p -- prints percent of buffer above top of window, or Top, Bot or All
-  %P -- prints percent of buffer above bottom of window, perhaps plus Top, or
-  print Bottom or All
-  %m -- prints mode name
-  %n -- prints Narrow if appropriate
-  %z -- prints mnemonics of buffer, terminal, and keyboard coding systems
-  %Z -- like %z, but including the end-of-line format"
-  (let* ((fs (format-spec-make
-              ?a (abbreviate-file-name (or (buffer-file-name)
-                                           (buffer-name)))
-              ?t (if (fboundp 'projectile-project-name)
-                     (projectile-project-name)
-                   "-")
-              ?S system-name
-              ?I invocation-name
-              ?U (or (getenv "USER") "")
-              ?b "%b"
-              ?f "%f"
-              ?F "%F"
-              ?* "%*"
-              ?+ "%+"
-              ?s "%s"
-              ?l "%l"
-              ?c "%c"
-              ?p "%p"
-              ?P "%P"
-              ?m "%m"
-              ?n "%n"
-              ?z "%z"
-              ?Z "%Z"
-              ?[ "%["
-              ?] "%]"
-              ?% "%%"
-              ?- "%-"
-              )))
-    (format-spec title-format fs)))
 
 (defun dotspacemacs/safe-load ()
   "Error recovery from malformed .spacemacs.

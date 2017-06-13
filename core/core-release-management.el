@@ -84,7 +84,7 @@ users on `develop' branch must manually pull last commits instead."
           (t (message "Update aborted.")))))
 
 (defun spacemacs/check-for-new-version (force &optional interval)
-  "Periodically check for new for new Spacemacs version.
+  "Periodicly check for new for new Spacemacs version.
 Update `spacemacs-new-version' variable if any new version has been
 found."
   (interactive "P")

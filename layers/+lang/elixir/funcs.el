@@ -9,7 +9,7 @@
 ;;
 ;;; License: GPLv3
 
-(defun spacemacs//elixir-looking-back-special-p (expr)
+(defun spacemas//elixir-looking-back-special-p (expr)
   (save-excursion
     (when (or (looking-back " ")
               (looking-back "-")) (backward-char))
@@ -22,7 +22,7 @@
 
 (defun spacemacs//elixir-do-end-close-action (id action context)
   (when (eq action 'insert)
-    (cond ((spacemacs//elixir-looking-back-special-p id)
+    (cond ((spacemas//elixir-looking-back-special-p id)
            (insert " ") (backward-char))
           ((looking-back "(")
            (insert ") ") (backward-char) (backward-char))

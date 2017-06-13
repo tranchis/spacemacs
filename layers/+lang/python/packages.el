@@ -57,38 +57,26 @@
         "ga" 'anaconda-mode-find-assignments
         "gb" 'anaconda-mode-go-back
         "gu" 'anaconda-mode-find-references)
-
-      (evilified-state-evilify-map anaconda-mode-view-mode-map
-        :mode anaconda-mode-view-mode
-        :bindings
-        (kbd "q") 'quit-window
-        (kbd "C-j") 'next-error-no-select
-        (kbd "C-k") 'previous-error-no-select
-        (kbd "RET") 'spacemacs/anaconda-view-forward-and-push)
-
+      (evilified-state-evilify anaconda-mode-view-mode anaconda-mode-view-mode-map
+        (kbd "q") 'quit-window)
       (spacemacs|hide-lighter anaconda-mode)
 
       (defadvice anaconda-mode-goto (before python/anaconda-mode-goto activate)
         (evil--jumps-push)))))
 
 (defun python/post-init-company ()
-  (spacemacs|add-company-backends
-    :backends (company-files company-capf)
-    :modes inferior-python-mode
-    :variables
-    company-minimum-prefix-length 0
-    company-idle-delay 0.5)
-  (when (configuration-layer/package-usedp 'pip-requirements)
-    (spacemacs|add-company-backends
-      :backends company-capf
-      :modes pip-requirements-mode)))
+  (spacemacs|add-company-hook python-mode)
+  (spacemacs|add-company-hook inferior-python-mode)
+  (push '(company-files company-capf) company-backends-inferior-python-mode)
+  (add-hook 'inferior-python-mode-hook (lambda ()
+                                         (setq-local company-minimum-prefix-length 0)
+                                         (setq-local company-idle-delay 0.5))))
 
 (defun python/init-company-anaconda ()
   (use-package company-anaconda
     :defer t
-    :init (spacemacs|add-company-backends
-            :backends company-anaconda
-            :modes python-mode)))
+    :init
+    (push 'company-anaconda company-backends-python-mode)))
 
 (defun python/init-cython-mode ()
   (use-package cython-mode
@@ -110,7 +98,7 @@
   (add-hook `python-mode-hook `turn-on-evil-matchit-mode))
 
 (defun python/post-init-flycheck ()
-  (spacemacs/enable-flycheck 'python-mode))
+  (spacemacs/add-flycheck-hook 'python-mode))
 
 (defun python/pre-init-helm-cscope ()
   (spacemacs|use-package-add-hook xcscope
@@ -177,7 +165,12 @@
 
 (defun python/init-pip-requirements ()
   (use-package pip-requirements
-    :defer t))
+    :defer t
+    :init
+    (progn
+      ;; company support
+      (push 'company-capf company-backends-pip-requirements-mode)
+      (spacemacs|add-company-hook pip-requirements-mode))))
 
 (defun python/init-py-isort ()
   (use-package py-isort
@@ -229,8 +222,7 @@
           "Vw" 'pyvenv-workon))
       ;; setup shell correctly on environment switch
       (dolist (func '(pyvenv-activate pyvenv-deactivate pyvenv-workon))
-        (advice-add func :after 'spacemacs/python-setup-shell)
-        (advice-add func :after 'spacemacs/python-setup-checkers)))))
+        (advice-add func :after 'spacemacs/python-setup-shell)))))
 
 (defun python/init-pylookup ()
   (use-package pylookup
@@ -340,9 +332,8 @@
         ;; set compile command to buffer-file-name
         ;; universal argument put compile buffer in comint mode
         (let ((universal-argument t)
-              (compile-command (format "%s %s"
-                                       (spacemacs/pyenv-executable-find python-shell-interpreter)
-                                       (file-name-nondirectory buffer-file-name))))
+              (compile-command (format "python %s" (file-name-nondirectory
+                                                    buffer-file-name))))
           (if arg
               (call-interactively 'compile)
             (compile compile-command t)
@@ -454,5 +445,4 @@ fix this issue."
       (spacemacs/set-leader-keys-for-major-mode 'python-mode
         "=" 'yapfify-buffer)
       (when python-enable-yapf-format-on-save
-        (add-hook 'python-mode-hook 'yapf-mode)))
-    :config (spacemacs|hide-lighter yapf-mode)))
+        (add-hook 'python-mode-hook 'yapf-mode)))))

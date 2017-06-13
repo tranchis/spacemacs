@@ -12,6 +12,9 @@
 
 ;; elm-mode
 
+(defun spacemacs//elm-find-root ()
+  (setq default-directory (elm--find-dependency-file-path)))
+
 (defun spacemacs/elm-compile-buffer-output ()
   (interactive)
   (let* ((fname (format "%s.js" (downcase (file-name-base (buffer-file-name))))))

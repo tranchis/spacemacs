@@ -22,3 +22,5 @@
 
 (defvar rcirc-spacemacs-layout-binding "i"
   "Binding used in the setup for `spacemacs-layouts' micro-state")
+
+(spacemacs|defvar-company-backends rcirc-mode)

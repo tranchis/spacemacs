@@ -61,7 +61,8 @@
         (setq x86-lookup-browse-pdf-function 'x86-lookup-browse-pdf-pdf-tools)))))
 
 (defun asm/post-init-company ()
-  (spacemacs|add-company-backends :modes asm-mode nasm-mode))
+  (spacemacs|add-company-hook asm-mode)
+  (spacemacs|add-company-hook nasm-mode))
 
 (defun asm/post-init-ggtags ()
   (add-hook 'asm-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))

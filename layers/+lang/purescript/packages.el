@@ -19,13 +19,10 @@
     popwin))
 
 (defun purescript/post-init-company ()
-  (when (configuration-layer/package-usedp 'psc-ide)
-    (spacemacs|add-company-backends
-      :backends company-psc-ide-backend
-      :modes purescript-mode)))
+  (spacemacs|add-company-hook purescript-mode))
 
 (defun purescript/post-init-flycheck ()
-  (spacemacs/enable-flycheck 'purescript-mode))
+  (spacemacs/add-flycheck-hook 'purescript-mode))
 
 (defun purescript/init-purescript-mode ()
   (use-package purescript-mode
@@ -60,6 +57,7 @@
     (progn
       (add-hook 'purescript-mode-hook 'psc-ide-mode)
       (spacemacs/declare-prefix-for-mode 'purescript-mode "mm" "purescript/psc-ide")
+      (push 'company-psc-ide-backend company-backends-purescript-mode)
 
       (customize-set-variable 'psc-ide-add-import-on-completion purescript-add-import-on-completion)
       (customize-set-variable 'psc-ide-rebuild-on-save purescript-enable-rebuild-on-save)

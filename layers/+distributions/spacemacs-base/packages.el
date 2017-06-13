@@ -27,10 +27,7 @@
         evil-visualstar
         ;; some packages need to look for binaries,
         ;; which means the path must be ready by then
-        (exec-path-from-shell :step pre
-                              :toggle (or (spacemacs/system-is-mac)
-                                          (spacemacs/system-is-linux)
-                                          (eq window-system 'x)))
+        (exec-path-from-shell :step pre)
         help-fns+
         (hi-lock :location built-in)
         (holy-mode :location local :step pre)
@@ -56,7 +53,6 @@
         (visual-line-mode :location built-in)
         (whitespace :location built-in)
         (winner :location built-in)
-        (zone :location built-in)
         ))
 
 ;; Initialization of packages
@@ -187,8 +183,10 @@
 
 (defun spacemacs-base/init-exec-path-from-shell ()
   (use-package exec-path-from-shell
-    :demand t
-    :config (exec-path-from-shell-initialize)))
+    :init (when (or (spacemacs/system-is-mac)
+                    (spacemacs/system-is-linux)
+                    (memq window-system '(x)))
+            (exec-path-from-shell-initialize))))
 
 (defun spacemacs-base/init-help-fns+ ()
   (use-package help-fns+
@@ -340,25 +338,27 @@
             projectile-known-projects-file (concat spacemacs-cache-directory
                                                    "projectile-bookmarks.eld"))
       (spacemacs/set-leader-keys
+        "pb" 'projectile-switch-to-buffer
+        "pd" 'projectile-find-dir
+        "pf" 'projectile-find-file
+        "pF" 'projectile-find-file-dwim
+        "ph" 'helm-projectile
+        "pr" 'projectile-recentf
+        "pp" 'projectile-switch-project
+        "pv" 'projectile-vc)
+      (spacemacs/set-leader-keys
         "p!" 'projectile-run-shell-command-in-root
         "p&" 'projectile-run-async-shell-command-in-root
         "p%" 'projectile-replace-regexp
         "pa" 'projectile-toggle-between-implementation-and-test
-        "pb" 'projectile-switch-to-buffer
         "pc" 'projectile-compile-project
-        "pd" 'projectile-find-dir
         "pD" 'projectile-dired
-        "pf" 'projectile-find-file
-        "pF" 'projectile-find-file-dwim
         "pg" 'projectile-find-tag
         "pG" 'projectile-regenerate-tags
         "pI" 'projectile-invalidate-cache
         "pk" 'projectile-kill-buffers
-        "pp" 'projectile-switch-project
-        "pr" 'projectile-recentf
         "pR" 'projectile-replace
-        "pT" 'projectile-test-project
-        "pv" 'projectile-vc))
+        "pT" 'projectile-test-project))
     :config
     (progn
       (projectile-global-mode)
@@ -381,8 +381,8 @@
     :config
     (progn
       (add-to-list 'recentf-exclude
-                   (file-truename spacemacs-cache-directory))
-      (add-to-list 'recentf-exclude (file-truename package-user-dir))
+                   (expand-file-name spacemacs-cache-directory))
+      (add-to-list 'recentf-exclude (expand-file-name package-user-dir))
       (add-to-list 'recentf-exclude "COMMIT_EDITMSG\\'"))))
 
 (defun spacemacs-base/init-savehist ()
@@ -536,34 +536,5 @@
       (setq winner-boring-buffers
             (append winner-boring-buffers spacemacs/winner-boring-buffers))
       (winner-mode t))))
-
-(defun spacemacs-base/init-zone ()
-  (require 'zone)
-  (when (and dotspacemacs-zone-out-when-idle
-             (numberp dotspacemacs-zone-out-when-idle))
-    (zone-when-idle dotspacemacs-zone-out-when-idle))
-  ;; remove not interesting programs
-  (setq zone-programs [
-                       ;; zone-pgm-jitter
-                       zone-pgm-putz-with-case
-                       zone-pgm-dissolve
-                       ;; zone-pgm-explode
-                       zone-pgm-whack-chars
-                       zone-pgm-rotate
-                       zone-pgm-rotate-LR-lockstep
-                       zone-pgm-rotate-RL-lockstep
-                       zone-pgm-rotate-LR-variable
-                       zone-pgm-rotate-RL-variable
-                       zone-pgm-drip
-                       ;; zone-pgm-drip-fretfully
-                       ;; zone-pgm-five-oclock-swan-dive
-                       ;; zone-pgm-martini-swan-dive
-                       zone-pgm-rat-race
-                       zone-pgm-paragraph-spaz
-                       ;; zone-pgm-stress
-                       ;; zone-pgm-stress-destress
-                       ;; zone-pgm-random-life
-                       ])
-  (spacemacs/set-leader-keys "TZ" 'zone))
 
 (defun spacemacs-base/init-centered-buffer-mode ())

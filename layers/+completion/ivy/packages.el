@@ -18,13 +18,13 @@
         evil
         flx
         helm-make
+        imenu
         ivy
         ivy-hydra
         (ivy-spacemacs-help :location local)
         persp-mode
         projectile
         smex
-        recentf
         swiper
         wgrep
         ))
@@ -35,30 +35,27 @@
     ;; add some functions to ahs transient states
     (setq spacemacs--symbol-highlight-transient-state-doc
           (concat spacemacs--symbol-highlight-transient-state-doc
-                  "  [_b_] search buffers [_/_] search proj [_f_] search files [_s_] swiper"))
-    (spacemacs/transient-state-register-add-bindings 'symbol-highlight
-      '(("/" spacemacs/search-project-auto-region-or-symbol :exit t)
-        ("b" spacemacs/swiper-all-region-or-symbol :exit t)
-        ("f" spacemacs/search-auto-region-or-symbol :exit t)
-        ("s" spacemacs/swiper-region-or-symbol :exit t)))))
+                  "  [_b_] search buffers [_/_] search proj [_f_] search files")
+          spacemacs-symbol-highlight-transient-state-add-bindings
+          '(("/" spacemacs/search-project-auto-region-or-symbol :exit t)
+            ("b" spacemacs/swiper-all-region-or-symbol :exit t)
+            ("f" spacemacs/search-auto-region-or-symbol :exit t)))))
 
 (defun ivy/init-counsel ()
   (use-package counsel
-    :init
+    :config
     (progn
+      (define-key counsel-find-file-map (kbd "C-h") 'counsel-up-directory)
       (spacemacs/set-leader-keys
         dotspacemacs-emacs-command-key 'counsel-M-x
         ;; files
         "ff"  'counsel-find-file
-        "fel" 'counsel-find-library
         "fL"  'counsel-locate
         ;; help
         "?"   'counsel-descbinds
         "hdf" 'counsel-describe-function
-        "hdF" 'counsel-describe-face
         "hdm" 'spacemacs/describe-mode
         "hdv" 'counsel-describe-variable
-        "hi"  'counsel-info-lookup-symbol
         "hR"  'spacemacs/counsel-search-docs
         ;; insert
         "iu"  'counsel-unicode-char
@@ -80,6 +77,10 @@
         "saF" 'spacemacs/search-ag-region-or-symbol
         "sap" 'spacemacs/search-project-ag
         "saP" 'spacemacs/search-project-ag-region-or-symbol
+        "stf" 'spacemacs/search-pt
+        "stF" 'spacemacs/search-pt-region-or-symbol
+        "stp" 'spacemacs/search-project-pt
+        "stP" 'spacemacs/search-project-pt-region-or-symbol
         "sgf" 'spacemacs/search-grep
         "sgF" 'spacemacs/search-grep-region-or-symbol
         "sgp" 'counsel-git-grep
@@ -87,24 +88,13 @@
         "skf" 'spacemacs/search-ack
         "skF" 'spacemacs/search-ack-region-or-symbol
         "skp" 'spacemacs/search-project-ack
-        "skP" 'spacemacs/search-project-ack-region-or-symbol
-        "srf" 'spacemacs/search-rg
-        "srF" 'spacemacs/search-rg-region-or-symbol
-        "srp" 'spacemacs/search-project-rg
-        "srP" 'spacemacs/search-project-rg-region-or-symbol
-        "stf" 'spacemacs/search-pt
-        "stF" 'spacemacs/search-pt-region-or-symbol
-        "stp" 'spacemacs/search-project-pt
-        "stP" 'spacemacs/search-project-pt-region-or-symbol))
+        "skP" 'spacemacs/search-project-ack-region-or-symbol)
 
-    :config
-    (progn
       ;; set additional ivy actions
       (ivy-set-actions
        'counsel-find-file
        spacemacs--ivy-file-actions)
 
-      (define-key counsel-find-file-map (kbd "C-h") 'counsel-up-directory)
       ;; remaps built-in commands that have a counsel replacement
       (counsel-mode 1)
       (spacemacs|hide-lighter counsel-mode)
@@ -122,30 +112,19 @@
       :post-init
       (progn
         (setq projectile-switch-project-action 'counsel-projectile-find-file)
-
-        (ivy-set-actions
-         'counsel-projectile-find-file
-         (append spacemacs--ivy-file-actions
-                 '(("R" (lambda (arg)
-                          (interactive)
-                          (call-interactively
-                           #'projectile-invalidate-cache)
-                          (ivy-resume)) "refresh list")
-                   )))
-
         (spacemacs/set-leader-keys
           "p SPC" 'counsel-projectile
           "pb"    'counsel-projectile-switch-to-buffer
           "pd"    'counsel-projectile-find-dir
           "pp"    'counsel-projectile-switch-project
-          "pf"    'counsel-projectile-find-file)))))
+          "pf"    'counsel-projectile-find-file
+          "pr"    'projectile-recentf)))))
 
 (defun ivy/post-init-evil ()
   (spacemacs/set-leader-keys
     "re" 'spacemacs/ivy-evil-registers))
 
-(defun ivy/init-flx ()
-  (use-package flx))
+(defun ivy/init-flx ())
 
 (defun ivy/init-helm-make ()
   (use-package helm-make
@@ -162,25 +141,24 @@
 
 (defun ivy/init-ivy ()
   (use-package ivy
-    :init
+    :config
     (progn
+      (with-eval-after-load 'recentf
+        ;; merge recentf and bookmarks into buffer switching. If we set this
+        ;; before recentf loads, then ivy-mode loads recentf for us,
+        ;; which messes up the spacemacs version of recentf.
+        (setq ivy-use-virtual-buffers t))
       ;; Key bindings
       (spacemacs/set-leader-keys
         "a'" 'spacemacs/ivy-available-repls
         "fr" 'counsel-recentf
         "rl" 'ivy-resume
-        "bb" 'ivy-switch-buffer))
+        "bb" 'ivy-switch-buffer)
 
-    :config
-    (progn
       ;; custom actions for recentf
       (ivy-set-actions
        'counsel-recentf
        spacemacs--ivy-file-actions)
-
-      ;; mappings to quit minibuffer or enter transient state
-      (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
-      (define-key ivy-minibuffer-map (kbd "M-SPC") 'hydra-ivy/body)
 
       (ivy-mode 1)
       (global-set-key (kbd "C-c C-r") 'ivy-resume)
@@ -195,8 +173,7 @@
       (ido-mode -1))))
 
 (defun ivy/init-ivy-hydra ()
-  (use-package ivy-hydra)
-  (define-key hydra-ivy/keymap [escape] 'hydra-ivy/keyboard-escape-quit-and-exit))
+  (use-package ivy-hydra))
 
 (defun ivy/post-init-persp-mode ()
   ;; based on https://gist.github.com/Bad-ptr/1aca1ec54c3bdb2ee80996eb2b68ad2d#file-persp-ivy-el
@@ -214,13 +191,13 @@
    'spacemacs/ivy-spacemacs-layouts
    '(("c" persp-kill-without-buffers "Close layout(s)")
      ("k" persp-kill  "Kill layout(s)")))
-  (spacemacs/transient-state-register-remove-bindings 'layouts
-    '("C" "X"))
-  (spacemacs/transient-state-register-add-bindings 'layouts
-    '(("b" spacemacs/ivy-spacemacs-layout-buffer :exit t)
-      ("l" spacemacs/ivy-spacemacs-layouts :exit t)
-      ("C" spacemacs/ivy-spacemacs-layout-close-other :exit t)
-      ("X" spacemacs/ivy-spacemacs-layout-kill-other :exit t))))
+  (setq spacemacs-layouts-transient-state-remove-bindings
+        '("C" "X"))
+  (setq spacemacs-layouts-transient-state-add-bindings
+        '(("b" spacemacs/ivy-spacemacs-layout-buffer :exit t)
+          ("l" spacemacs/ivy-spacemacs-layouts :exit t)
+          ("C" spacemacs/ivy-spacemacs-layout-close-other :exit t)
+          ("X" spacemacs/ivy-spacemacs-layout-kill-other :exit t))))
 
 (defun ivy/post-init-projectile ()
   (setq projectile-completion-system 'ivy)
@@ -236,23 +213,6 @@
     :init (setq-default smex-history-length 32
                         smex-save-file (concat spacemacs-cache-directory
                                                ".smex-items"))))
-(defun ivy/post-init-recentf ()
-  ;; custom actions for recentf
-
-  (ivy-set-actions
-   'counsel-recentf
-   (append spacemacs--ivy-file-actions
-           '(("R" (lambda (arg)
-                    (interactive)
-                    (recentf-cleanup)
-                    (ivy-recentf)) "refresh list")
-             ("D" (lambda (arg)
-                    (interactive)
-                    (setq recentf-list (delete arg recentf-list))
-                    (ivy-recentf)) "delete from list"))))
-
-  ;; merge recentf and bookmarks into buffer switching. If we set this
-  (setq ivy-use-virtual-buffers t))
 
 (defun ivy/init-ivy-spacemacs-help ()
   (use-package ivy-spacemacs-help

@@ -9,6 +9,6 @@
 ;;
 ;;; License: GPLv3
 
-;; variables
+(spacemacs|defvar-company-backends merlin-mode)
 
 (spacemacs|define-jump-handlers tuareg-mode)

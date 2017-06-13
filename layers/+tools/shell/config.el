@@ -20,6 +20,8 @@
 
 ;; Variables
 
+(spacemacs|defvar-company-backends eshell-mode)
+
 (defvar shell-default-shell (if (eq window-system 'w32)
                                 'eshell
                               'ansi-term)

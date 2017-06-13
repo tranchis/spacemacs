@@ -9,7 +9,14 @@
 ;;
 ;;; License: GPLv3
 
+;; ---------------------------------------------------------------------------
+;; Prefixes
+;; ---------------------------------------------------------------------------
+
 ;; Variables
+
+(spacemacs|defvar-company-backends cider-mode)
+(spacemacs|defvar-company-backends cider-repl-mode)
 
 (spacemacs|define-jump-handlers clojure-mode)
 (spacemacs|define-jump-handlers clojurec-mode)

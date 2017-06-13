@@ -13,10 +13,11 @@
     ))
 
 (defun rcirc/post-init-company ()
-  (spacemacs|add-company-backends :backends company-capf :modes rcirc-mode))
+  (spacemacs|add-company-hook rcirc-mode)
+  (push 'company-capf company-backends-rcirc-mode))
 
 (defun rcirc/post-init-company-emoji ()
-  (spacemacs|add-company-backends :backends company-emoji :modes rcirc-mode))
+  (push 'company-emoji company-backends-rcirc-mode))
 
 (defun rcirc/post-init-emoji-cheat-sheet-plus ()
   (add-hook 'rcirc-mode-hook 'emoji-cheat-sheet-plus-display-mode))

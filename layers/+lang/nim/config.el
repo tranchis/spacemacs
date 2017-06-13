@@ -11,4 +11,7 @@
 
 ;; Variables
 
+(spacemacs|defvar-company-backends nim-mode)
+(spacemacs|defvar-company-backends nimscript-mode)
+
 (spacemacs|define-jump-handlers nim-mode)

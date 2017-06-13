@@ -13,8 +13,7 @@
   "Format buffer with tsfmt."
   (interactive)
   (if (executable-find "tsfmt")
-      (let*  ((extension (file-name-extension (or buffer-file-name "tmp.ts") t))
-              (tmpfile (make-temp-file "~fmt-tmp" nil extension))
+      (let*  ((tmpfile (make-temp-file "~fmt-tmp" nil ".ts"))
               (coding-system-for-read 'utf-8)
               (coding-system-for-write 'utf-8)
               (outputbuf (get-buffer-create "*~fmt-tmp.ts*")))

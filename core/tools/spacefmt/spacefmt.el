@@ -10,7 +10,7 @@
 ;;; License: GPLv3
 
 
-(load (expand-file-name "./core/tools/spacefmt/toc-org.el") nil t)
+(load-file  "./core/tools/spacefmt/toc-org.el")
 
 (require 'cl)
 (require 'files)
@@ -18,7 +18,6 @@
 (require 'thingatpt)
 
 (defconst empty-line-regexp "^[ \t]*$")
-(defconst tree-trunk-regexp "^[ 	]*|_")
 
 (defconst toc-heading-head "* Table of Contents")
 (defconst toc-heading-tail ":TOC_4_gh:noexport:")
@@ -27,7 +26,6 @@
                                toc-heading-tail))
 
 (defun apply-all ()
-  (message "Processing %s file.." (buffer-file-name))
   "Apply all filters."
   (remove-empty-lines-at-the-beginning)
   (insert-title)
@@ -113,7 +111,7 @@
     (while (looking-at-p org-table-any-line-regexp)
       (forward-line))
     (unless (looking-at-p empty-line-regexp)
-      (goto-char (point-at-bol))
+      (beginning-of-line)
       (open-line 1)
       (forward-line))))
 
@@ -125,7 +123,6 @@
 
 (defun apply-toc ()
   "Apply current toc-org TAG to TOC."
-  (toc-org-enable)
   (goto-char (point-min))
   (toc-org-insert-toc))
 
@@ -133,16 +130,11 @@
   "Goto next org table.
 Returns nil if no more tables left."
   ;; Skip current table.
-  (goto-char (point-at-bol))
   (while (looking-at-p org-table-any-line-regexp)
-    (goto-char (point-at-bol))
     (forward-line))
   ;; Skip to the next table.
-  (re-search-forward org-table-any-line-regexp nil t)
-  (goto-char (point-at-bol))
-  (when (looking-at-p tree-trunk-regexp)
-    (goto-next-table))
-  (looking-at-p org-table-any-line-regexp))
+  (when (re-search-forward org-table-hline-regexp nil t)
+    (forward-line -1 )))
 
 (defun move-packages-to-config ()
   "Move xxx-packages list to config.el."

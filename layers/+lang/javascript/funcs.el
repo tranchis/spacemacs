@@ -22,9 +22,7 @@
   (spacemacs/declare-prefix-for-mode mode "mrd" "documentation")
   (spacemacs/set-leader-keys-for-major-mode mode
     "rdb" 'js-doc-insert-file-doc
-    "rdf" (if (configuration-layer/package-usedp 'yasnippet)
-              'js-doc-insert-function-doc-snippet
-            'js-doc-insert-function-doc)
+    "rdf" 'js-doc-insert-function-doc
     "rdt" 'js-doc-insert-tag
     "rdh" 'js-doc-describe-tag))
 

@@ -16,10 +16,6 @@
     ledger-mode
     ))
 
-(defun finance/post-init-company ()
-  (spacemacs|add-company-backends
-    :backends company-capf
-    :modes ledger-mode))
 
 (defun finance/init-flycheck-ledger ()
   (with-eval-after-load 'flycheck
@@ -32,6 +28,7 @@
     :init
     (progn
       (setq ledger-post-amount-alignment-column 62)
+      (push 'company-capf company-backends-ledger-mode)
       (spacemacs/set-leader-keys-for-major-mode 'ledger-mode
          "hd" 'ledger-delete-current-transaction
          "a" 'ledger-add-transaction
@@ -57,3 +54,6 @@
       ;; TODO remove this hack if the limitation is removed upstream
       (add-hook 'ledger-mode-hook 'evil-normalize-keymaps)
       (evilified-state-evilify ledger-report-mode ledger-report-mode-map))))
+
+(defun finance/post-init-company ()
+  (spacemacs|add-company-hook ledger-mode))

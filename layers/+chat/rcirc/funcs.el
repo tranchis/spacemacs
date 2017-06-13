@@ -18,8 +18,7 @@ Allow rcirc to read authinfo from ~/.authinfo.gpg via the auth-source API.
 This doesn't support the chanserv auth method. "
   (require 'auth-source)
   (dolist (p (auth-source-search :port '("nickserv" "bitlbee" "quakenet")
-                                 :require '(:port :user :secret)
-                                 :max (length rcirc-server-alist)))
+                                 :require '(:port :user :secret)))
     (let ((secret (plist-get p :secret))
           (method (intern (plist-get p :port))))
       (add-to-list

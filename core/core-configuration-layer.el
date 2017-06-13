@@ -69,12 +69,6 @@ ROOT is returned."
              (dir (car (directory-files elpa-dir 'full pkg-match))))
         (when dir (file-name-as-directory dir))))))
 
-(defvar configuration-layer-pre-sync-hook nil
-  "Hook executed at the beginning of configuration synchronization.")
-
-(defvar configuration-layer-post-sync-hook nil
-  "Hook executed at the end of configuration synchronization.")
-
 (defvar configuration-layer-rollback-directory
   (concat spacemacs-cache-directory ".rollback/")
   "Spacemacs rollback directory.")
@@ -413,7 +407,6 @@ refreshed during the current session."
 (defun configuration-layer/sync (&optional no-install)
   "Synchronize declared layers in dotfile with spacemacs.
 If NO-INSTALL is non nil then install steps are skipped."
-  (run-hooks 'configuration-layer-pre-sync-hook)
   (dotspacemacs|call-func dotspacemacs/layers "Calling dotfile layers...")
   (setq dotspacemacs--configuration-layers-saved
         dotspacemacs-configuration-layers)
@@ -469,8 +462,7 @@ If NO-INSTALL is non nil then install steps are skipped."
   ;; configure used packages
   (configuration-layer//configure-packages configuration-layer--used-packages)
   (configuration-layer//load-layers-files configuration-layer--used-layers
-                                          '("keybindings.el"))
-  (run-hooks 'configuration-layer-post-sync-hook))
+                                          '("keybindings.el")))
 
 (defun configuration-layer/load-auto-layer-file ()
   "Load `auto-layer.el' file"
@@ -633,10 +625,10 @@ If TOGGLEP is nil then `:toggle' parameter is ignored."
                (eq (plist-get (cdr location) :fetcher) 'local))
           (cond
            (layer (let ((path (expand-file-name
-                               (format "%s%s"
+                               (format "%s%s/%s.el"
                                        (configuration-layer/get-layer-local-dir
                                         layer-name)
-                                       pkg-name-str))))
+                                       pkg-name-str pkg-name-str))))
                     (cfgl-package-set-property
                      obj :location `(recipe :fetcher file :path ,path))))
            ((eq 'dotfile layer-name)
@@ -959,8 +951,7 @@ variable as well."
 (defun configuration-layer/make-packages-from-dotfile (&optional usedp)
   "Read the additonal packages declared in the dotfile and create packages.
 USEDP if non-nil indicates that made packages are used packages."
-  (dolist (pkg (append dotspacemacs-additional-packages
-                       dotspacemacs--additional-theme-packages))
+  (dolist (pkg dotspacemacs-additional-packages)
     (let* ((pkg-name (if (listp pkg) (car pkg) pkg))
            (obj (configuration-layer/get-package pkg-name)))
       (if obj
@@ -1128,11 +1119,9 @@ Returns nil if the directory is not a category."
                        ;; layers in private folder ~/.emacs.d/private
                        (list configuration-layer-private-directory)
                        ;; layers in dotdirectory
-                       ;; this path may not exist, so check if it does
                        (when dotspacemacs-directory
-                         (let ((dir (expand-file-name (concat dotspacemacs-directory
-                                                              "layers/"))))
-                           (when (file-exists-p dir) (list dir))))
+                         (list (expand-file-name (concat dotspacemacs-directory
+                                                         "layers/"))))
                        ;; additional layer directories provided by the user
                        dotspacemacs-configuration-layer-path))
         (discovered '()))
@@ -1172,10 +1161,9 @@ Returns nil if the directory is not a category."
                   (if indexed-layer
                       ;; the same layer may have been discovered twice,
                       ;; in which case we don't need a warning
-                      (unless (string-equal (file-truename
-                                             (directory-file-name (oref indexed-layer :dir)))
-                                            (file-truename
-                                             (directory-file-name sub)))
+                      (unless (string-equal
+                               (directory-file-name (oref indexed-layer :dir))
+                               (directory-file-name sub))
                         (configuration-layer//warning
                          (concat
                           "Duplicated layer %s detected in directory \"%s\", "
@@ -1579,12 +1567,25 @@ wether the declared layer is an used one or not."
         (spacemacs-buffer/message (format "%S is toggled off." pkg-name)))
        (t
         ;; load-path
-        (let ((dir (configuration-layer/get-location-directory
-                    pkg-name
-                    (oref pkg :location)
-                    (car (oref pkg :owners)))))
-          (when dir
-            (add-to-list 'load-path dir)))
+        (let ((location (oref pkg :location)))
+          (cond
+           ((stringp location)
+            (if (file-directory-p location)
+                (push (file-name-as-directory location) load-path)
+              (configuration-layer//warning
+               "Location path for package %S does not exists (value: %s)."
+               pkg location)))
+           ((and (eq 'local location)
+                 (eq 'dotfile (car (oref pkg :owners))))
+            (push (file-name-as-directory
+                   (concat configuration-layer-private-directory "local/"
+                           (symbol-name (oref pkg :name))))
+                  load-path))
+           ((eq 'local location)
+            (let* ((owner (configuration-layer/get-layer
+                           (car (oref pkg :owners))))
+                   (dir (when owner (oref owner :dir))))
+              (push (format "%slocal/%S/" dir pkg-name) load-path)))))
         ;; configuration
         (unless (memq (oref pkg :location) '(local site built-in))
           (configuration-layer//activate-package pkg-name))
@@ -1594,27 +1595,6 @@ wether the declared layer is an used one or not."
            (format "%S is configured in the dotfile." pkg-name)))
          (t
           (configuration-layer//configure-package pkg))))))))
-
-(defun configuration-layer/get-location-directory (pkg-name location owner)
-  "Return the location on disk for PKG."
-  (cond
-   ((stringp location)
-    (if (file-directory-p location)
-        (file-name-as-directory location)
-      (configuration-layer//warning
-       "Location path for package %S does not exists (value: %s)."
-       pkg-name location)
-      nil))
-   ((eq 'local location)
-    (let ((dir (if (eq 'dotfile owner)
-                   configuration-layer-private-directory
-                 (let* ((owner (configuration-layer/get-layer owner)))
-                   (when owner (oref owner :dir))))))
-      (if dir
-          (file-name-as-directory (format "%slocal/%S/" dir pkg-name))
-        (configuration-layer//warning
-         "Cannot find path location path for package %S." pkg-name)
-        nil)))))
 
 (defun configuration-layer//package-enabled-p (pkg layer)
   "Returns true if PKG should be configured for LAYER.
@@ -1767,10 +1747,8 @@ If called with a prefix argument ALWAYS-UPDATE, assume yes to update."
         (spacemacs-buffer/append
          (format "\n--> %s package(s) to be updated.\n" upgraded-count))
         (spacemacs-buffer/append
-         (format
-          (concat "\nEmacs has to be restarted to actually install the "
-                  "new version of the packages%s.\n")
-          (if (member "restart-emacs" update-packages) "" " (SPC q r)")))
+         (concat "\nEmacs has to be restarted to actually install the "
+                 "new version of the packages (SPC q r).\n"))
         (configuration-layer//cleanup-rollback-directory)
         (spacemacs//redisplay)))
     (when (eq upgrade-count 0)
@@ -1983,7 +1961,7 @@ depends on it."
     ;; (message "orphans: %s" orphans)
     (if orphans
         (progn
-          (spacemacs-buffer/set-mode-line "Uninstalling unused packages...")
+          (spacemacs-buffer/set-mode-line "Uninstalling not used packages...")
           (spacemacs//redisplay)
           (spacemacs-buffer/append
            (format "Found %s orphan package(s) to delete...\n"

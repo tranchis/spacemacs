@@ -72,11 +72,11 @@
 
 (defun evil-unimpaired/next-frame ()
   (interactive)
-  (select-frame-set-input-focus (next-frame)))
+  (raise-frame (next-frame)))
 
 (defun evil-unimpaired/previous-frame ()
   (interactive)
-  (select-frame-set-input-focus (previous-frame)))
+  (raise-frame (previous-frame)))
 
 ;; from tpope's unimpaired
 (define-key evil-normal-state-map (kbd "[ SPC")

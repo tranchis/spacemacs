@@ -9,7 +9,7 @@
 ;;
 ;;; License: GPLv3
 
-;; variables
+(spacemacs|defvar-company-backends typescript-mode)
 
 (defvar typescript-fmt-on-save nil
   "Run formatter on buffer save.")
