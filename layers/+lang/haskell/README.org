@@ -55,7 +55,8 @@ This layer adds support for the [[https://www.haskell.org/][Haskell]] language.
 
 ** Features:
 - syntax highlighting for [[https://github.com/haskell/haskell-mode][haskell source]], [[https://github.com/haskell/haskell-mode][cabal files]], [[https://github.com/bgamari/cmm-mode][C-- source]],
-- auto-completion with one of selected backends (=intero=, =ghci= or =ghc-mod=).
+- auto-completion with one of selected backends (=intero=, =dante=, =ghci= or
+  =ghc-mod=).
 
 *This layer is in construction, it needs your contributions and bug reports.*
 
@@ -97,7 +98,7 @@ For information about setting up =$PATH=, check out the corresponding section in
 the FAQ (~SPC h SPC $PATH RET~).
 
 ** Completion support
-This layer provides several completion backends - =intero=, =ghci= and
+This layer provides several completion backends - =intero=, =dante=, =ghci= and
 =ghc-mod=. By default =ghci= (=company-ghci=) is used as it requires no
 dependencies and works both with =stack= and pure =cabal= projects. In order to
 manually set completion backend set value of =haskell-completion-backend=. Note
@@ -118,6 +119,10 @@ order to use it you have to call =haskell-process-load-or-reload= (=SPC s b=).
 =Intero= works only for =stack= users. You can manually install =intero= executable by
 calling =stack install intero=, but this step is optional as =Intero= installs
 itself.
+
+*** =dante=
+=dante= works for =cabal=, =nix=, =sytx=, and =stack= users.
+=dante= requires Emacs 25.
 
 *** =ghc-mod=
 [[http://www.mew.org/~kazu/proj/ghc-mod/][ghc-mod]] enhances =haskell-mode= with for example code completion, templates,

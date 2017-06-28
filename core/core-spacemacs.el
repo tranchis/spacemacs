@@ -89,26 +89,15 @@ the final step of executing code in `emacs-startup-hook'.")
   (setq dotspacemacs-editing-style (dotspacemacs//read-editing-style-config
                                     dotspacemacs-editing-style))
   (configuration-layer/initialize)
-  ;; Apply theme
-  (let ((default-theme (car dotspacemacs-themes)))
-    (condition-case err
-        (spacemacs/load-theme default-theme nil)
-      ('error
-       ;; fallback on Spacemacs default theme
-       (setq spacemacs--default-user-theme default-theme)
-       (setq dotspacemacs-themes (delq spacemacs--fallback-theme
-                                       dotspacemacs-themes))
-       (add-to-list 'dotspacemacs-themes spacemacs--fallback-theme)
-       (setq default-theme spacemacs--fallback-theme)
-       (load-theme spacemacs--fallback-theme t)))
-    ;; protect used themes from deletion as orphans
-    (setq configuration-layer--protected-packages
-          (append
-           (delq nil (mapcar 'spacemacs//get-theme-package
-                             dotspacemacs-themes))
-           configuration-layer--protected-packages))
-    (setq-default spacemacs--cur-theme default-theme)
-    (setq-default spacemacs--cycle-themes (cdr dotspacemacs-themes)))
+  ;; frame title init
+  (when (and (display-graphic-p) dotspacemacs-frame-title-format)
+    (require 'format-spec)
+    (setq frame-title-format '((:eval (spacemacs/title-prepare dotspacemacs-frame-title-format))))
+    (if dotspacemacs-icon-title-format
+        (setq icon-title-format '((:eval (spacemacs/title-prepare dotspacemacs-icon-title-format))))
+      (setq icon-title-format frame-title-format)))
+  ;; theme
+  (spacemacs/load-default-theme spacemacs--fallback-theme 'disable)
   ;; font
   (spacemacs|do-after-display-system-init
    ;; If you are thinking to remove this call to `message', think twice. You'll
@@ -157,13 +146,13 @@ the final step of executing code in `emacs-startup-hook'.")
 (defun spacemacs//removes-gui-elements ()
   "Remove the menu bar, tool bar and scroll bars."
   ;; removes the GUI elements
+  (when (and (fboundp 'scroll-bar-mode) (not (eq scroll-bar-mode -1)))
+    (scroll-bar-mode -1))
   (when (and (fboundp 'tool-bar-mode) (not (eq tool-bar-mode -1)))
     (tool-bar-mode -1))
   (unless (spacemacs/window-system-is-mac)
     (when (and (fboundp 'menu-bar-mode) (not (eq menu-bar-mode -1)))
       (menu-bar-mode -1)))
-  (when (and (fboundp 'scroll-bar-mode) (not (eq scroll-bar-mode -1)))
-    (scroll-bar-mode -1))
   ;; tooltips in echo-aera
   (when (and (fboundp 'tooltip-mode) (not (eq tooltip-mode -1)))
     (tooltip-mode -1)))

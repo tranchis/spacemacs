@@ -332,14 +332,47 @@
       (spacemacs|diminish global-spacemacs-whitespace-cleanup-mode
                           " Ⓦ" " W"))))
 
+(defun spacemacs-editing/init-string-inflection ()
+  (use-package string-inflection
+    :init
+    (progn
+      (spacemacs|define-transient-state string-inflection
+        :title "String Inflection Transient State"
+        :doc "\n [_i_] cycle"
+        :bindings
+        ("i" string-inflection-all-cycle))
+      (spacemacs/declare-prefix "xi" "inflection")
+      (spacemacs/set-leader-keys
+        "xic" 'string-inflection-lower-camelcase
+        "xiC" 'string-inflection-camelcase
+        "xii" 'spacemacs/string-inflection-transient-state/body
+        "xi-" 'string-inflection-kebab-case
+        "xik" 'string-inflection-kebab-case
+        "xi_" 'string-inflection-underscore
+        "xiu" 'string-inflection-underscore
+        "xiU" 'string-inflection-upcase))))
+
 (defun spacemacs-editing/init-undo-tree ()
   (use-package undo-tree
     :init
-    (global-undo-tree-mode)
-    (setq undo-tree-visualizer-timestamps t)
-    (setq undo-tree-visualizer-diff t)
+    (progn
+      (global-undo-tree-mode)
+      (setq undo-tree-visualizer-timestamps t
+            undo-tree-visualizer-diff t))
     :config
-    (spacemacs|hide-lighter undo-tree-mode)))
+    (progn
+      ;; restore diff window after quit.  TODO fix upstream
+      (defun spacemacs/undo-tree-restore-default ()
+        (setq undo-tree-visualizer-diff t))
+      (advice-add 'undo-tree-visualizer-quit :after #'spacemacs/undo-tree-restore-default)
+      (spacemacs|hide-lighter undo-tree-mode)
+      (evilified-state-evilify-map undo-tree-visualizer-mode-map
+        :mode undo-tree-visualizer-mode
+        :bindings
+        (kbd "j") 'undo-tree-visualize-redo
+        (kbd "k") 'undo-tree-visualize-undo
+        (kbd "h") 'undo-tree-visualize-switch-branch-left
+        (kbd "l") 'undo-tree-visualize-switch-branch-right))))
 
 (defun spacemacs-editing/init-uuidgen ()
   (use-package uuidgen

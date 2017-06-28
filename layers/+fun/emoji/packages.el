@@ -12,7 +12,8 @@
 (setq emoji-packages
       '(
         emoji-cheat-sheet-plus
-        (company-emoji :toggle (configuration-layer/package-usedp 'company))
+        emojify
+        (company-emoji :depends company)
         ))
 
 (defun emoji/init-emoji-cheat-sheet-plus ()

@@ -57,6 +57,7 @@ variable =syntax-checking-use-original-bitmaps= to =t=:
 
 | Key Binding | Description                                                  |
 |-------------+--------------------------------------------------------------|
+| ~SPC e b~   | check for errors now                                         |
 | ~SPC e c~   | clear errors                                                 |
 | ~SPC e h~   | describe flycheck checker                                    |
 | ~SPC e l~   | display a list of all the errors                             |

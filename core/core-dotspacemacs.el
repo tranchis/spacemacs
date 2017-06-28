@@ -358,6 +358,20 @@ List sizes may be nil, in which case
 (defvar dotspacemacs-frozen-packages '()
   "A list of packages that cannot be updated.")
 
+(defvar dotspacemacs-pretty-docs nil
+  "Run `spacemacs/prettify-org-buffer' when
+visiting README.org files of Spacemacs.")
+
+(defun dotspacemacs//prettify-spacemacs-docs ()
+  "Run `spacemacs/prettify-org-buffer' if `buffer-file-name'
+has `spacemacs-start-directory'"
+  (when (and dotspacemacs-pretty-docs
+             spacemacs-start-directory
+             buffer-file-name
+             (string-prefix-p (expand-file-name spacemacs-start-directory)
+                              (expand-file-name buffer-file-name)))
+    (spacemacs/prettify-org-buffer)))
+
 ;; only for backward compatibility
 (defalias 'dotspacemacs-mode 'emacs-lisp-mode)
 
@@ -418,10 +432,13 @@ Returns non nil if the layer has been effectively inserted."
     (with-current-buffer (find-file-noselect (dotspacemacs/location))
       (beginning-of-buffer)
       (let ((insert-point (re-search-forward
-                           "dotspacemacs-configuration-layers *\n?.*\\((\\)")))
-        (insert (format "\n%S" layer-name))
-        (indent-region insert-point (+ insert-point
-                                       (length (symbol-name layer-name))))
+                           "[^`]dotspacemacs-configuration-layers\\s-*\n?[^(]*\\((\\)")))
+        (insert (format "%S" layer-name))
+        (unless (equal (point) (point-at-eol))
+          (insert "\n"))
+        (indent-region insert-point (min (point-max)
+                                         (+ insert-point 2
+                                            (length (symbol-name layer-name)))))
         (save-buffer)))
     (load-file (dotspacemacs/location))
     t))
@@ -712,7 +729,7 @@ error recovery."
   "Test settings in dotfile for correctness.
  Return non-nil if all the tests passed."
   (interactive)
-  (configuration-layer/discover-layers)
+  (configuration-layer/discover-layers 'refresh-index)
   (let ((min-version "0.0"))
     ;; dotspacemacs-version not implemented yet
     ;; (if (version< dotspacemacs-version min-version)
@@ -736,10 +753,10 @@ error recovery."
           (prog1
               ;; execute all tests no matter what
               (cl-reduce (lambda (x y)
-                        (and (funcall y) x))
-                      '(dotspacemacs//test-dotspacemacs/layers
-                        dotspacemacs//test-dotspacemacs/init)
-                      :initial-value t)
+                           (and (funcall y) x))
+                         '(dotspacemacs//test-dotspacemacs/layers
+                           dotspacemacs//test-dotspacemacs/init)
+                         :initial-value t)
             (goto-char (point-min))))))))
 
 (provide 'core-dotspacemacs)

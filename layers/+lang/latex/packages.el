@@ -10,22 +10,22 @@
 ;;; License: GPLv3
 
 (setq latex-packages
-  '(
-    auctex
-    (auctex-latexmk :toggle (string= "LatexMk" latex-build-command))
-    company
-    (company-auctex :toggle (configuration-layer/package-usedp 'company))
-    evil-matchit
-    (reftex :location built-in)
-    flycheck
-    flyspell
-    ggtags
-    helm-gtags
-    smartparens
-    typo
-    yasnippet
-    which-key
-    ))
+      '(
+        auctex
+        (auctex-latexmk :toggle (string= "LatexMk" latex-build-command))
+        (company-auctex :depends company)
+        evil-matchit
+        (reftex :location built-in)
+        flycheck
+        flyspell
+        ggtags
+        helm-gtags
+        (magic-latex-buffer :toggle latex-enable-magic)
+        smartparens
+        typo
+        yasnippet
+        which-key
+        ))
 
 (defun latex/init-auctex ()
   (use-package tex

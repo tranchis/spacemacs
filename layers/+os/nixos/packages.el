@@ -1,8 +1,10 @@
 (setq nixos-packages
       '(
         company
-        (company-nixos-options :toggle (configuration-layer/package-usedp 'company))
-        (helm-nixos-options :toggle (configuration-layer/package-usedp 'helm))
+        flycheck
+        (company-nixos-options :toggle
+                               (configuration-layer/package-usedp 'company))
+        (helm-nixos-options :depends helm)
         nix-mode
         nixos-options
         ))

@@ -22,6 +22,7 @@
         php-mode
         phpcbf
         phpunit
+        (company-php :depends company)
         ))
 
 (defun php/post-init-company ()

@@ -63,8 +63,53 @@ Start the eclim daemon with ~SPC m d s~ and stop it with ~SPC m d k~. (See
 below.)
 
 * Key bindings
-** Java-mode
-*** Project management
+** Meghanada
+*** Server
+
+ | Key Binding | Description                                  |
+ |-------------+----------------------------------------------|
+ | ~SPC m D c~ | Connect to server                            |
+ | ~SPC m D d~ | Disconnect from server                       |
+ | ~SPC m D i~ | Install server (should be done automatically |
+ | ~SPC m D k~ | Kill server                                  |
+ | ~SPC m D l~ | Clear server cache                           |
+ | ~SPC m D p~ | Ping server                                  |
+ | ~SPC m D r~ | Restarrt server                              |
+ | ~SPC m D s~ | Start server                                 |
+ | ~SPC m D u~ | Update server                                |
+ | ~SPC m D v~ | Print version of the server                  |
+
+*** Navigation
+
+ | Key Binding | Description                    |
+ |-------------+--------------------------------|
+ | ~SPC m g b~ | Jump back to previous location |
+ | ~SPC m g g~ | Jump to declaration            |
+
+*** Compilation
+
+ | Key Binding | Description           |
+ |-------------+-----------------------|
+ | ~SPC m c b~ | Compile file (buffer) |
+ | ~SPC m c c~ | Compile project       |
+
+*** Tests (junit)
+
+ | Key Binding | Description                 |
+ |-------------+-----------------------------|
+ | ~SPC m t a~ | Run all tests               |
+ | ~SPC m t c~ | Run test class around point |
+ | ~SPC m t l~ | Run last tests              |
+ | ~SPC m t t~ | Run test cause around point |
+
+*** Refactoring
+
+ | Key Binding | Description                            |
+ |-------------+----------------------------------------|
+ | ~SPC m =~   | Beautify code                          |
+ | ~SPC m r i~ | Optimize imports                       |
+ | ~SPC m r I~ | Import all                             |
+ | ~SPC m r n~ | Create a new class, interface, or enum |
 
 | Key Binding | Description                    |
 |-------------+--------------------------------|

@@ -1,16 +1,11 @@
  ;; see conditional package inclusion
 (setq dash-packages
       '(
-        (helm-dash :toggle (configuration-layer/package-usedp 'helm))
-        (counsel-dash :toggle (configuration-layer/package-usedp 'ivy))
-        ))
-
-(cond
- ((spacemacs/system-is-mac)
-  (push 'dash-at-point dash-packages))
- ((or (spacemacs/system-is-linux)
-      (spacemacs/system-is-mswindows))
-  (push 'zeal-at-point dash-packages)))
+        (dash-at-point :toggle (spacemacs/system-is-mac))
+        (helm-dash :depends helm)
+        (counsel-dash :depends ivy)
+        (zeal-at-point :toggle (or (spacemacs/system-is-linux)
+                                   (spacemacs/system-is-mswindows)))))
 
 (defun dash/init-helm-dash ()
   (use-package helm-dash

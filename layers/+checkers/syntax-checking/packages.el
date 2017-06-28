@@ -100,6 +100,7 @@ If the error list is visible, hide it.  Otherwise, show it."
 
       ;; key bindings
       (spacemacs/set-leader-keys
+        "eb" 'flycheck-buffer
         "ec" 'flycheck-clear
         "eh" 'flycheck-describe-checker
         "el" 'spacemacs/toggle-flycheck-error-list
