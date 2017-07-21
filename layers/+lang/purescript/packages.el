@@ -19,7 +19,10 @@
     popwin))
 
 (defun purescript/post-init-company ()
-  (spacemacs|add-company-hook purescript-mode))
+  (when (configuration-layer/package-used-p 'psc-ide)
+    (spacemacs|add-company-backends
+      :backends company-psc-ide-backend
+      :modes purescript-mode)))
 
 (defun purescript/post-init-flycheck ()
   (spacemacs/add-flycheck-hook 'purescript-mode))

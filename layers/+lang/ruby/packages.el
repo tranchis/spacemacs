@@ -47,8 +47,10 @@
               "bo" 'bundle-open))))
 
 (defun ruby/post-init-company ()
-  (spacemacs|add-company-hook ruby-mode)
-  (spacemacs|add-company-hook enh-ruby-mode)
+  (when (configuration-layer/package-used-p 'robe)
+    (spacemacs|add-company-backends
+      :backends company-robe
+      :modes ruby-mode enh-ruby-mode))
   (with-eval-after-load 'company-dabbrev-code
     (dolist (mode '(ruby-mode enh-ruby-mode))
       (push mode company-dabbrev-code-modes))))
@@ -144,7 +146,7 @@
         (spacemacs/set-leader-keys-for-major-mode mode
           "'" 'robe-start
           ;; robe mode specific
-          "hd" 'robe-doc
+          "hh" 'robe-doc
           "rsr" 'robe-rails-refresh
           ;; inf-enh-ruby-mode
           "sf" 'ruby-send-definition

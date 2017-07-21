@@ -14,7 +14,7 @@
         add-node-modules-path
         coffee-mode
         company
-        (company-tern :depends company)
+        (company-tern :requires company)
         evil-matchit
         flycheck
         ggtags
@@ -52,8 +52,8 @@
 
 (defun javascript/init-company-tern ()
   (use-package company-tern
-    :if (and (configuration-layer/package-usedp 'company)
-             (configuration-layer/package-usedp 'tern))
+    :if (and (configuration-layer/package-used-p 'company)
+             (configuration-layer/package-used-p 'tern))
     :defer t
     :init
     (push 'company-tern company-backends-js2-mode)))

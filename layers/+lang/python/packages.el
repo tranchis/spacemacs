@@ -13,7 +13,7 @@
   '(
     anaconda-mode
     company
-    (company-anaconda :depends company)
+    (company-anaconda :requires company)
     cython-mode
     eldoc
     evil-matchit
@@ -21,7 +21,7 @@
     ggtags
     helm-cscope
     helm-gtags
-    (helm-pydoc :depends helm)
+    (helm-pydoc :requires helm)
     hy-mode
     live-py-mode
     (nose :location local)
@@ -65,12 +65,16 @@
         (evil--jumps-push)))))
 
 (defun python/post-init-company ()
-  (spacemacs|add-company-hook python-mode)
-  (spacemacs|add-company-hook inferior-python-mode)
-  (push '(company-files company-capf) company-backends-inferior-python-mode)
-  (add-hook 'inferior-python-mode-hook (lambda ()
-                                         (setq-local company-minimum-prefix-length 0)
-                                         (setq-local company-idle-delay 0.5))))
+  (spacemacs|add-company-backends
+    :backends (company-files company-capf)
+    :modes inferior-python-mode
+    :variables
+    company-minimum-prefix-length 0
+    company-idle-delay 0.5)
+  (when (configuration-layer/package-used-p 'pip-requirements)
+    (spacemacs|add-company-backends
+      :backends company-capf
+      :modes pip-requirements-mode)))
 
 (defun python/init-company-anaconda ()
   (use-package company-anaconda
@@ -90,7 +94,7 @@
 (defun python/post-init-eldoc ()
   (defun spacemacs//init-eldoc-python-mode ()
     (eldoc-mode)
-    (when (configuration-layer/package-usedp 'anaconda-mode)
+    (when (configuration-layer/package-used-p 'anaconda-mode)
       (anaconda-eldoc-mode)))
   (add-hook 'python-mode-hook 'spacemacs//init-eldoc-python-mode))
 
@@ -399,7 +403,7 @@
         (kbd "C-c M-l") 'spacemacs/comint-clear-buffer))))
 
 (defun python/post-init-semantic ()
-  (when (configuration-layer/package-usedp 'anaconda-mode)
+  (when (configuration-layer/package-used-p 'anaconda-mode)
       (add-hook 'python-mode-hook
                 'spacemacs//disable-semantic-idle-summary-mode t))
   (spacemacs/add-to-hook 'python-mode-hook

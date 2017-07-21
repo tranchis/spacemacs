@@ -1,19 +1,21 @@
 (setq clojure-packages
-  '(
-    cider
-    cider-eval-sexp-fu
-    clj-refactor
-    clojure-mode
-    (clojure-snippets :toggle (configuration-layer/layer-usedp 'auto-completion))
-    company
-    eldoc
-    ggtags
-    helm-gtags
-    popwin
-    smartparens
-    subword
-    org
-    ))
+      '(
+        cider
+        cider-eval-sexp-fu
+        clj-refactor
+        clojure-mode
+        (clojure-snippets :toggle (configuration-layer/layer-used-p 'auto-completion))
+        company
+        eldoc
+        ggtags
+        helm-gtags
+        org
+        parinfer
+        popwin
+        sayid
+        smartparens
+        subword))
+
 
 (defun clojure/init-cider ()
   (use-package cider

@@ -26,7 +26,7 @@
     :defer t
     :init
     (progn
-      (when (configuration-layer/package-usedp 'company)
+      (when (configuration-layer/package-used-p 'company)
         ;; needed to avoid an error when fetching doc using company
         ;; Note: if you are using a roslyn based omnisharp server you can
         ;; set back this variable to t.
@@ -86,7 +86,10 @@
         "=" 'omnisharp-code-format))))
 
 (defun csharp/post-init-company ()
-  (spacemacs|add-company-hook csharp-mode))
+  (when (configuration-layer/package-used-p 'omnisharp)
+    (spacemacs|add-company-backends
+      :backends company-omnisharp
+      :modes csharp-mode)))
 
 (defun csharp/init-csharp-mode ()
   (use-package csharp-mode

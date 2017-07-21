@@ -25,8 +25,10 @@
     ))
 
 (defun elixir/post-init-company ()
-  (spacemacs|add-company-hook elixir-mode)
-  (spacemacs|add-company-hook alchemist-iex-mode))
+  (when (configuration-layer/package-used-p 'alchemist)
+    (spacemacs|add-company-backends
+      :backends alchemist-company
+      :modes elixir-mode alchemist-iex-mode)))
 
 (defun elixir/init-alchemist ()
   (use-package alchemist

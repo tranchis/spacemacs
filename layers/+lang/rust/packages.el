@@ -15,7 +15,7 @@
     company
     racer
     flycheck
-    (flycheck-rust :depends flycheck)
+    (flycheck-rust :requires flycheck)
     ggtags
     helm-gtags
     rust-mode

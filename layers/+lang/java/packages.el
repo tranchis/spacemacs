@@ -12,13 +12,14 @@
 (setq java-packages
       '(
         company
-        (company-emacs-eclim :toggle (configuration-layer/package-usedp 'company))
+        (company-emacs-eclim :toggle
+                             (configuration-layer/package-used-p 'company))
         eclim
         eldoc
         ensime
         flycheck
         (flycheck-eclim :location local
-                        :depends flycheck)
+                        :requires flycheck)
         flyspell
         ggtags
         helm-gtags
@@ -108,8 +109,8 @@
         "pu" 'eclim-project-update
         ;; refactor
         "rc" 'eclim-java-constructor
-        "rg" 'eclim-java-generate-getter-and-setter
         "rf" 'eclim-java-format
+        "rg" 'eclim-java-generate-getter-and-setter
         "ri" 'eclim-java-import-organize
         "rj" 'eclim-java-implement
         "rn" 'eclim-java-new
@@ -264,12 +265,18 @@
         "hi" 'eclim-java-hierarchy
         "hu" 'eclim-java-find-references
 
-        "mi" 'spacemacs/java-maven-clean-install
-        "mI" 'spacemacs/java-maven-install
-        "mp" 'eclim-maven-lifecycle-phases
-        "mr" 'eclim-maven-run
-        "mR" 'eclim-maven-lifecycle-phase-run
-        "mt" 'spacemacs/java-maven-test
+;; (defun java/post-init-ensime ()
+;;   (when (eq 'ensime java-backend)
+;;     (use-package ensime
+;;       :defer t
+;;       :init
+;;       (progn
+;;         (spacemacs//ensime-init 'java-mode t nil)
+;;         (when (configuration-layer/package-used-p 'company)
+;;           (push 'ensime-company company-backends-java-mode)))
+;;       :config
+;;       (progn
+;;         (spacemacs/ensime-configure-keybindings 'java-mode)))))
 
         "aa" 'eclim-ant-run
         "ac" 'eclim-ant-clear-cache

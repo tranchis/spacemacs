@@ -21,12 +21,9 @@
     (progn
       (edit-server-start))
     :config
-    (progn
-      (setq edit-server-default-major-mode 'markdown-mode))
-    ))
-
-(defun chrome/init-gmail-message-mode ( )
-  (use-package gmail-message-mode))
+    (when (configuration-layer/layer-used-p 'markdown)
+      (spacemacs/set-markdown-keybindings
+       'gmail-message-client-mode gmail-message-client-mode-map))))
 
 (defun chrome/init-flymd ()
   (use-package flymd
@@ -48,5 +45,8 @@
                 ((executable-find "google-chrome-stable") (start-browser (executable-find "google-chrome-stable") url))
                 (t (message "no useful browser"))))
 
-      (setq flymd-browser-open-function 'my-flymd-browser-function)
-      )))
+(defun chrome/pre-init-markdown-mode ()
+  (spacemacs|use-package-add-hook markdown-mode
+    :pre-config
+    (when (configuration-layer/package-used-p 'gmail-message-mode)
+      (add-to-list 'markdown--key-bindings-modes 'gmail-message-client-mode))))

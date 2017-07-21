@@ -16,7 +16,7 @@
     clang-format
     cmake-mode
     company
-    (company-c-headers :depends company)
+    (company-c-headers :requires company)
     company-ycmd
     flycheck
     gdb-mi
@@ -69,9 +69,8 @@
     :init (push 'company-cmake company-backends-cmake-mode)))
 
 (defun c-c++/post-init-company ()
-  (spacemacs|add-company-hook c-mode-common)
-  (spacemacs|add-company-hook cmake-mode)
-
+  (when (configuration-layer/package-used-p 'cmake-mode)
+    (spacemacs|add-company-backends :backends company-cmake :modes cmake-mode))
   (when c-c++-enable-clang-support
     (push 'company-clang company-backends-c-mode-common)
 

@@ -3,24 +3,60 @@
 [[file:img/java.png]]
 
 * Table of Contents                                         :TOC_4_gh:noexport:
- - [[#description][Description]]
- - [[#layer-installation][Layer Installation]]
-   - [[#layer][Layer]]
-   - [[#eclim][Eclim]]
-     - [[#installation][Installation]]
-     - [[#usage][Usage]]
- - [[#key-bindings][Key bindings]]
-   - [[#java-mode][Java-mode]]
-     - [[#project-management][Project management]]
-     - [[#eclimd][Eclimd]]
-     - [[#maven][Maven]]
-     - [[#goto][Goto]]
-     - [[#refactoring][Refactoring]]
-     - [[#documentation-find][Documentation, Find]]
-     - [[#problems][Problems]]
-     - [[#tests][Tests]]
-   - [[#problems-buffer][Problems buffer]]
-   - [[#projects-buffer][Projects buffer]]
+- [[#description][Description]]
+- [[#layer-installation][Layer Installation]]
+  - [[#layer][Layer]]
+  - [[#choosing-a-backend][Choosing a backend]]
+- [[#backends][Backends]]
+  - [[#meghanada][Meghanada]]
+    - [[#installation][Installation]]
+    - [[#about-maven][About Maven]]
+  - [[#eclim][Eclim]]
+    - [[#installation-1][Installation]]
+      - [[#eclipse][Eclipse]]
+      - [[#eclim-1][Eclim]]
+    - [[#configuration][Configuration]]
+    - [[#usage][Usage]]
+  - [[#ensime][ENSIME]]
+    - [[#installation-2][Installation]]
+    - [[#configuration-1][Configuration]]
+    - [[#usage-1][Usage]]
+    - [[#issues][Issues]]
+- [[#key-bindings][Key bindings]]
+  - [[#meghanada-1][Meghanada]]
+    - [[#server][Server]]
+    - [[#navigation][Navigation]]
+    - [[#compilation][Compilation]]
+    - [[#tests-junit][Tests (junit)]]
+    - [[#refactoring][Refactoring]]
+    - [[#tasks][Tasks]]
+  - [[#eclim-2][Eclim]]
+    - [[#java-mode][Java-mode]]
+      - [[#ant][Ant]]
+      - [[#project-management][Project management]]
+      - [[#eclim-daemon][Eclim daemon]]
+      - [[#maven][Maven]]
+      - [[#goto][Goto]]
+      - [[#refactoring-1][Refactoring]]
+      - [[#documentation-find][Documentation, Find]]
+      - [[#errors-problems][Errors (problems)]]
+      - [[#tests][Tests]]
+    - [[#errors-problems-buffer][Errors (problems) buffer]]
+    - [[#projects-buffer][Projects buffer]]
+  - [[#ensime-key-bindings][Ensime key bindings]]
+    - [[#search][Search]]
+    - [[#ensime-search-mode][Ensime Search Mode]]
+    - [[#sbt][sbt]]
+    - [[#typecheck][Typecheck]]
+    - [[#debug][Debug]]
+    - [[#errors][Errors]]
+    - [[#goto-1][Goto]]
+    - [[#print-and-yank-types][Print and yank types]]
+    - [[#documentation-inspect][Documentation, Inspect]]
+    - [[#server-1][Server]]
+    - [[#refactoring-2][Refactoring]]
+    - [[#tests-1][Tests]]
+    - [[#repl][REPL]]
 
 * Description
 This layer adds support for the Java language using the [[http://eclim.org][Eclim]] client/server.
@@ -111,36 +147,199 @@ below.)
  | ~SPC m r I~ | Import all                             |
  | ~SPC m r n~ | Create a new class, interface, or enum |
 
-| Key Binding | Description                    |
-|-------------+--------------------------------|
-| ~SPC m p b~ | Build project                  |
-| ~SPC m p c~ | Create project                 |
-| ~SPC m p d~ | Delete project                 |
-| ~SPC m p g~ | Open file in current project   |
-| ~SPC m p i~ | Import project                 |
-| ~SPC m p j~ | Information about project      |
-| ~SPC m p k~ | Close project                  |
-| ~SPC m p o~ | Open project                   |
-| ~SPC m p p~ | Open project management buffer |
-| ~SPC m p u~ | Update project                 |
+*** Tasks
 
-*** Eclimd
+ | Key Binding | Description |
+ |-------------+-------------|
+ | ~SPC m x :~ | Run task    |
 
-| Key Binding | Description  |
-|-------------+--------------|
-| ~SPC m d s~ | Start daemon |
-| ~SPC m d k~ | Stop daemon  |
+** Eclim
+*** Java-mode
 
-*** Maven
+**** Ant
 
-| Key Binding | Description                    |
-|-------------+--------------------------------|
-| ~SPC m m i~ | Run maven clean install        |
-| ~SPC m m I~ | Run maven install              |
-| ~SPC m m p~ | Run one already goal from list |
-| ~SPC m m r~ | Run maven goals                |
-| ~SPC m m R~ | Run one maven goal             |
-| ~SPC m m t~ | Run maven test                 |
+ | Key Binding | Description     |
+ |-------------+-----------------|
+ | ~SPC m a a~ | Run Ant         |
+ | ~SPC m a c~ | Clear Ant cache |
+ | ~SPC m a r~ | Run Ant         |
+ | ~SPC m a v~ | Validate        |
+
+**** Project management
+
+ | Key Binding | Description                    |
+ |-------------+--------------------------------|
+ | ~SPC m p b~ | Build project                  |
+ | ~SPC m p c~ | Create project                 |
+ | ~SPC m p d~ | Delete project                 |
+ | ~SPC m p g~ | Open file in current project   |
+ | ~SPC m p i~ | Import project                 |
+ | ~SPC m p j~ | Information about project      |
+ | ~SPC m p k~ | Close project                  |
+ | ~SPC m p o~ | Open project                   |
+ | ~SPC m p p~ | Open project management buffer |
+ | ~SPC m p r~ | Run project                    |
+ | ~SPC m p u~ | Update project                 |
+
+**** Eclim daemon
+
+ | Key Binding | Description  |
+ |-------------+--------------|
+ | ~SPC m D k~ | Kill daemon  |
+ | ~SPC m D s~ | Start daemon |
+
+**** Maven
+
+ | Key Binding | Description                    |
+ |-------------+--------------------------------|
+ | ~SPC m m i~ | Run maven clean install        |
+ | ~SPC m m I~ | Run maven install              |
+ | ~SPC m m p~ | Run one already goal from list |
+ | ~SPC m m r~ | Run maven goals                |
+ | ~SPC m m R~ | Run one maven goal             |
+ | ~SPC m m t~ | Run maven test                 |
+
+**** Goto
+
+ | Key Binding | Description                                 |
+ |-------------+---------------------------------------------|
+ | ~M-​,​~       | jump back from go to declaration/definition |
+ | ~SPC m g g~ | go to declaration                           |
+ | ~SPC m g t~ | go to type definition                       |
+
+**** Refactoring
+
+ | Key Binding | Description                            |
+ |-------------+----------------------------------------|
+ | ~SPC m r c~ | create a constructor                   |
+ | ~SPC m r f~ | format file                            |
+ | ~SPC m r g~ | generate getter and setter             |
+ | ~SPC m r i~ | optimize imports                       |
+ | ~SPC m r j~ | implement or override a method         |
+ | ~SPC m r n~ | create a new class, enum, or interface |
+ | ~SPC m r r~ | rename symbol                          |
+
+**** Documentation, Find
+
+ | Key Binding | Description                            |
+ |-------------+----------------------------------------|
+ | ~SPC m f f~ | general find in project                |
+ | ~SPC m h c~ | call hierarchy                         |
+ | ~SPC m h h~ | show documentation for symbol at point |
+ | ~SPC m h i~ | view hierarchy                         |
+ | ~SPC m h u~ | show usages for symbol at point        |
+
+**** Errors (problems)
+
+ | Key Binding | Description                |
+ |-------------+----------------------------|
+ | ~SPC e e~   | Force an error check       |
+ | ~SPC e l~   | List errors                |
+ | ~SPC e n~   | Next error                 |
+ | ~SPC e p~   | Previous error             |
+ | ~SPC m e e~ | Correct error around point |
+
+**** Tests
+
+ | Key Binding | Description                                                   |
+ |-------------+---------------------------------------------------------------|
+ | ~SPC m t t~ | run JUnit tests for current method or current file or project |
+
+*** Errors (problems) buffer
+
+ | Key Binding | Description                         |
+ |-------------+-------------------------------------|
+ | ~RET~       | go to problem place                 |
+ | ~a~         | show all problems                   |
+ | ~e~         | show only errors                    |
+ | ~f~         | show problems only for current file |
+ | ~g~         | refresh problems                    |
+ | ~q~         | quit                                |
+ | ~w~         | show only warnings                  |
+
+*** Projects buffer
+
+ | Key Binding | Description                                |
+ |-------------+--------------------------------------------|
+ | ~RET~       | go to current project                      |
+ | ~c~         | go to problem place                        |
+ | ~D~         | delete project                             |
+ | ~g~         | refresh buffer                             |
+ | ~i~         | info about current project                 |
+ | ~I~         | import existing project into the workspace |
+ | ~m~         | mark current project                       |
+ | ~M~         | mark all projects                          |
+ | ~N~         | create new project                         |
+ | ~o~         | open project                               |
+ | ~p~         | update project                             |
+ | ~q~         | quit                                       |
+ | ~R~         | rename current project                     |
+ | ~u~         | unmark current project                     |
+ | ~U~         | unmark all projects                        |
+
+** Ensime key bindings
+*** Search
+
+| Key Binding | Description                                         |
+|-------------+-----------------------------------------------------|
+| ~SPC m /~   | incremental search using =ensime-scalex= major mode |
+| ~SPC m ?~   | incremental search in all live buffers              |
+
+*** Ensime Search Mode
+
+| Key Binding | Description                                                       |
+|-------------+-------------------------------------------------------------------|
+| ~C-j~       | Move to next match                                                |
+| ~C-k~       | Move to previous match                                            |
+| ~C-i~       | Insert at point import of current result                          |
+| ~RET~       | Jump to the target of the currently selected ensime-search-result |
+| ~C-q~       | Quit ensime search                                                |
+
+*** sbt
+
+| Key Binding | Description         |
+|-------------+---------------------|
+| ~SPC m b .~ | sbt transient state |
+| ~SPC m b b~ | sbt command         |
+| ~SPC m b c~ | compile             |
+| ~SPC m b C~ | clean command       |
+| ~SPC m b i~ | switch to sbt shell |
+| ~SPC m b p~ | package command     |
+| ~SPC m b r~ | run command         |
+
+*** Typecheck
+
+| Key Binding | Description                     |
+|-------------+---------------------------------|
+| ~SPC m c t~ | type check the current file     |
+| ~SPC m c T~ | type check all the open buffers |
+
+*** Debug
+
+| Key Binding | Description                 |
+|-------------+-----------------------------|
+| ~SPC m d A~ | Attach to a remote debugger |
+| ~SPC m d b~ | set breakpoint              |
+| ~SPC m d B~ | clear breakpoint            |
+| ~SPC m d C~ | clear all breakpoints       |
+| ~SPC m d c~ | continue                    |
+| ~SPC m d i~ | inspect value at point      |
+| ~SPC m d n~ | next                        |
+| ~SPC m d o~ | step out                    |
+| ~SPC m d q~ | quit                        |
+| ~SPC m d r~ | run                         |
+| ~SPC m d s~ | step                        |
+| ~SPC m d t~ | backtrace                   |
+
+*Note:* These key bindings need a transient-state, PR welcome :-)
+
+*** Errors
+
+| Key Binding | Description                                        |
+|-------------+----------------------------------------------------|
+| ~SPC m e e~ | print error at point                               |
+| ~SPC m e l~ | show all errors and warnings                       |
+| ~SPC m e s~ | switch to buffer containing the stack trace parser |
 
 *** Goto
 

@@ -122,7 +122,7 @@ is achieved by adding the relevant text properties."
               'spacemacs//eshell-auto-end nil t)
     (add-hook 'evil-hybrid-state-entry-hook
               'spacemacs//eshell-auto-end nil t))
-  (when (configuration-layer/package-usedp 'semantic)
+  (when (configuration-layer/package-used-p 'semantic)
     (semantic-mode -1))
   ;; Caution! this will erase buffer's content at C-l
   (define-key eshell-mode-map (kbd "C-l") 'eshell/clear)

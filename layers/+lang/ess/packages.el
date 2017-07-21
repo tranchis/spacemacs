@@ -58,7 +58,9 @@
       ;; Explicitly run prog-mode hooks since ess-mode does not derive from
       ;; prog-mode major-mode
       (add-hook 'ess-mode-hook 'spacemacs/run-prog-mode-hooks)
-      (when (configuration-layer/package-usedp 'company)
+      (add-hook 'inferior-ess-mode-hook
+                'spacemacs//ess-fix-read-only-inferior-ess-mode)
+      (when (configuration-layer/package-used-p 'company)
         (add-hook 'ess-mode-hook 'company-mode))))
 
   ;; R --------------------------------------------------------------------------

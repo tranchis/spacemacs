@@ -11,9 +11,7 @@
 
 (defun spacemacs-haskell//setup-completion-backend ()
   "Conditionally setup haskell completion backend."
-  (unless (eq haskell-completion-backend 'ghc-mod)
-    (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
-  (when (configuration-layer/package-usedp 'company)
+  (when (configuration-layer/package-used-p 'company)
     (pcase haskell-completion-backend
       (`ghci (spacemacs-haskell//setup-ghci))
       (`ghc-mod (spacemacs-haskell//setup-ghc-mod))
@@ -41,7 +39,7 @@
       "m<" 'ghc-make-indent-shallower
       "hi" 'ghc-show-info
       "ht" 'ghc-show-type))
-  (when (configuration-layer/package-usedp 'flycheck)
+  (when (configuration-layer/package-used-p 'flycheck)
     ;; remove overlays from ghc-check.el if flycheck is enabled
     (set-face-attribute 'ghc-face-error nil :underline nil)
     (set-face-attribute 'ghc-face-warn nil :underline nil)))
